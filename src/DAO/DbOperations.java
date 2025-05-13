@@ -29,6 +29,23 @@ public class DbOperations {
             }
         }
     }
+    
+    public static ResultSet getData(String query){
+        Connection conn = null;
+        Statement st = null;
+        ResultSet rs = null;
+        
+        try{
+            conn = ConnectionProvider.getConn();
+            st = conn.createStatement();
+            rs = st.executeQuery(query);
+            
+            return rs;
+        } catch (Exception ex){
+            JOptionPane.showMessageDialog(null, ex, "Message", JOptionPane.ERROR_MESSAGE);
+            return null;
+        } 
+    }
 
     public static int getNextId(String tableName, String idColumnName) {
         int nextId = 1;
@@ -80,7 +97,7 @@ public class DbOperations {
             success = true;
 
             if (successMsg != null && !successMsg.isEmpty()) {
-                JOptionPane.showMessageDialog(null, successMsg, "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, successMsg, "Thành công", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (Exception e) {
             try {
@@ -89,7 +106,7 @@ public class DbOperations {
                 rollbackEx.printStackTrace();
             }
 
-            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } finally {
             try {

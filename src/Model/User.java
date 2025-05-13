@@ -15,16 +15,18 @@ public class User {
     private String password;
     private String role;
     private LocalDateTime create_at;
+    private boolean isActive;
 
     public User() {
     }
 
-    public User(int user_id, String username, String password, String role, LocalDateTime create_at) {
+    public User(int user_id, String username, String password, String role, LocalDateTime create_at, boolean isActive) {
         this.user_id = user_id;
         this.username = username;
         this.password = password;
         this.role = role;
         this.create_at = create_at;
+        this.isActive = isActive;
     }
 
     public int getUser_id() {
@@ -66,6 +68,13 @@ public class User {
     public void setCreate_at(LocalDateTime create_at) {
         this.create_at = create_at;
     }
-    
+
+    public boolean isIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
     
 }

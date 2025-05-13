@@ -27,7 +27,7 @@ public class SubscriberDAO{
             new SqlOperation() {
                 @Override
                 public String getSql() {
-                    return "INSERT INTO USER(user_id, username, password, role, created_at) VALUES (?, ?, ?, ?, ?)";
+                    return "INSERT INTO USER(user_id, username, password, role, created_at, isActive) VALUES (?, ?, ?, ?, ?, ?)";
                 }
 
                 @Override
@@ -37,6 +37,7 @@ public class SubscriberDAO{
                     ps.setString(3, obj.getPassword());
                     ps.setString(4, obj.getRole());
                     ps.setTimestamp(5, Timestamp.valueOf(obj.getCreate_at()));
+                    ps.setBoolean(6, true);
                 }
             },
 
