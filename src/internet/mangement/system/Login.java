@@ -4,6 +4,8 @@
  */
 package internet.mangement.system;
 
+import DAO.UserDAO;
+import Model.User;
 import javax.swing.JOptionPane;
 
 /**
@@ -104,6 +106,11 @@ public class Login extends javax.swing.JFrame {
         btnSignup.setText("Đăng ký");
         btnSignup.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnSignup.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnSignup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSignupActionPerformed(evt);
+            }
+        });
 
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/bg2.jpg"))); // NOI18N
         jLabel5.setText("jLabel5");
@@ -188,6 +195,27 @@ public class Login extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
+        if(validateFields()) {
+            try{
+                String username = txtUserName.getText().trim();
+                String password = txtPassword.getText().trim();
+        
+                User user = null;
+                boolean isSuccess = UserDAO.login(username, password);
+                
+                if(isSuccess) {
+                    JOptionPane.showMessageDialog(this, "Đăng nhập thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+//                    new MainFrame().setVisible(true);
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Sai tên đăng nhập hoặc mật khẩu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch(Exception ex) {
+                JOptionPane.showMessageDialog(null, "Lỗi: " + ex.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        
+        
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnForgotPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnForgotPasswordActionPerformed
@@ -196,8 +224,18 @@ public class Login extends javax.swing.JFrame {
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showConfirmDialog(null, "", "Thông báo", JOptionPane.ERROR_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn thoát không?", "Thông báo", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+    
+    if (result == JOptionPane.YES_OPTION) {
+        System.exit(0);
+    }
     }//GEN-LAST:event_btnExitActionPerformed
+
+    private void btnSignupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSignupActionPerformed
+        // TODO add your handling code here:
+        setVisible(false);
+        new SignUp().setVisible(true);
+    }//GEN-LAST:event_btnSignupActionPerformed
 
     /**
      * @param args the command line arguments

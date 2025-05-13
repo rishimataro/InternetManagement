@@ -238,7 +238,8 @@ public class SignUp extends javax.swing.JFrame {
 
     private void btnReturnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReturnActionPerformed
         // TODO add your handling code here:
-
+        setVisible(false);
+        new Login().setVisible(true);
     }//GEN-LAST:event_btnReturnActionPerformed
 
     private void btnSignupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSignupActionPerformed

@@ -26,8 +26,8 @@ public class Subscriber extends User {
         this.phone = phone;
     }
 
-    public Subscriber(int subscriber_id, String fullName, String address, String phone, int user_id, String username, String password, String role, LocalDateTime create_at) {
-        super(user_id, username, password, role, create_at);
+    public Subscriber(int subscriber_id, String fullName, String address, String phone, int user_id, String username, String password, String role, LocalDateTime create_at, boolean isActive) {
+        super(user_id, username, password, role, create_at, isActive);
         this.subscriber_id = subscriber_id;
         this.fullName = fullName;
         this.address = address;
