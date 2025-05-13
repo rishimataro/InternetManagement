@@ -6,6 +6,8 @@ package internet.mangement.system;
 
 import DAO.UserDAO;
 import Model.User;
+import internet.mangement.system.Admin.Dashboard;
+import internet.mangement.system.Session.UserSession;
 import javax.swing.JOptionPane;
 
 /**
@@ -201,12 +203,19 @@ public class Login extends javax.swing.JFrame {
                 String username = txtUserName.getText().trim();
                 String password = txtPassword.getText().trim();
 
-                User user = null;
-                boolean isSuccess = UserDAO.login(username, password);
+                User user = UserDAO.login(username, password);
 
-                if(isSuccess) {
+                if(user != null) {
+                    UserSession.setCurrentUser(user);
+
                     JOptionPane.showMessageDialog(this, "Đăng nhập thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-//                    new MainFrame().setVisible(true);
+
+                    if("admin".equalsIgnoreCase(user.getRole())) {
+                        new Dashboard().setVisible(true);
+                    } else {
+
+                    }
+
                     this.dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "Sai tên đăng nhập hoặc mật khẩu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -215,8 +224,6 @@ public class Login extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Lỗi: " + ex.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
             }
         }
-
-
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnForgotPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnForgotPasswordActionPerformed

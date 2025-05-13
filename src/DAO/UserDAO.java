@@ -18,9 +18,9 @@ public class UserDAO{
 
     public static void insert(final User obj) {
         final int userId = DbOperations.getNextId("USER", "user_id");
-        
+
         obj.setUser_id(userId);
-        
+
         SqlOperation[] operations = new SqlOperation[] {
             new SqlOperation() {
                 @Override
@@ -38,27 +38,32 @@ public class UserDAO{
                 }
             }
         };
-        
+
         DbOperations.executeTransaction(operations, "Thêm tài khoản thành công!");
     }
-    
-    public static boolean login(final String userName, final String password) {
+
+    public static User login(final String userName, final String password) {
         User user = null;
-        boolean isValid = false;
         try {
             ResultSet rs = DbOperations.getData("SELECT * FROM USER WHERE username = '" + userName + "' and password = '" + password +"'");
-            while (rs.next()) {
+            if (rs.next()) {
                 boolean isActive = rs.getBoolean("isActive");
                 if (isActive) {
-                    isValid = true;
+                    user = new User();
+                    user.setUser_id(rs.getInt("user_id"));
+                    user.setUsername(rs.getString("username"));
+                    user.setPassword(rs.getString("password"));
+                    user.setRole(rs.getString("role"));
+                    user.setCreate_at(rs.getTimestamp("created_at").toLocalDateTime());
+                    user.setIsActive(isActive);
                 }
             }
-            
+            rs.close();
         } catch (Exception ex) {
             ex.printStackTrace();
-        } 
+        }
 
-        return isValid;
+        return user;
     }
 
     public static void update(User obj) {
@@ -76,5 +81,5 @@ public class UserDAO{
     public static List<User> getAll() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
 }
