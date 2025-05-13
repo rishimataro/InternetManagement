@@ -19,8 +19,9 @@ public class Login extends javax.swing.JFrame {
      */
     public Login() {
         initComponents();
+        setTitle("Đăng ký");
     }
-    
+
     public void clear(){
         txtUserName.setText("");
         txtPassword.setText("");
@@ -199,10 +200,10 @@ public class Login extends javax.swing.JFrame {
             try{
                 String username = txtUserName.getText().trim();
                 String password = txtPassword.getText().trim();
-        
+
                 User user = null;
                 boolean isSuccess = UserDAO.login(username, password);
-                
+
                 if(isSuccess) {
                     JOptionPane.showMessageDialog(this, "Đăng nhập thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 //                    new MainFrame().setVisible(true);
@@ -214,21 +215,23 @@ public class Login extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Lỗi: " + ex.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
             }
         }
-        
-        
+
+
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnForgotPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnForgotPasswordActionPerformed
-        // TODO add your handling code here:
+        // Open the ForgotPassword dialog
+        ForgotPassword forgotPasswordDialog = new ForgotPassword(this, true);
+        forgotPasswordDialog.setVisible(true);
     }//GEN-LAST:event_btnForgotPasswordActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
         // TODO add your handling code here:
         int result = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn thoát không?", "Thông báo", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-    
-    if (result == JOptionPane.YES_OPTION) {
-        System.exit(0);
-    }
+
+        if (result == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
     }//GEN-LAST:event_btnExitActionPerformed
 
     private void btnSignupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSignupActionPerformed
@@ -244,7 +247,7 @@ public class Login extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

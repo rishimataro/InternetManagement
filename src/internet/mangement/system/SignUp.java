@@ -22,6 +22,7 @@ public class SignUp extends javax.swing.JFrame {
      */
     public SignUp() {
         initComponents();
+        setTitle("Đăng ký");
     }
 
     public void clear(){
