@@ -7,6 +7,7 @@ package DAO;
 import Model.Subscriber;
 import java.util.List;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Timestamp;
 import DAO.DbOperations.SqlOperation;
 
@@ -77,5 +78,36 @@ public class SubscriberDAO{
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
+    public static Subscriber getByPhone(String phone) {
+        Subscriber subscriber = null;
+        try {
+            ResultSet rs = DbOperations.getData("SELECT s.*, u.* FROM SUBSCRIBER s JOIN USER u ON s.user_id = u.user_id WHERE s.phone = '" + phone + "'");
+            if (rs.next()) {
+                subscriber = new Subscriber();
+                subscriber.setSubscriber_id(rs.getInt("subscriber_id"));
+                subscriber.setFullName(rs.getString("name"));
+                subscriber.setAddress(rs.getString("address"));
+                subscriber.setPhone(rs.getString("phone"));
+                subscriber.setUser_id(rs.getInt("user_id"));
+                subscriber.setUsername(rs.getString("username"));
+                subscriber.setPassword(rs.getString("password"));
+                subscriber.setRole(rs.getString("role"));
+                subscriber.setIsActive(rs.getBoolean("isActive"));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return subscriber;
+    }
 
+    public static boolean updatePassword(int userId, String newPassword) {
+        try {
+            String query = "UPDATE USER SET password = '" + newPassword + "' WHERE user_id = " + userId;
+            DbOperations.setDataOrDelete(query, "Đổi mật khẩu thành công! Vui lòng đăng nhập lại!");
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
 }

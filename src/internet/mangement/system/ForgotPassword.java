@@ -4,17 +4,75 @@
  */
 package internet.mangement.system;
 
+import DAO.SubscriberDAO;
+import Model.Subscriber;
+import javax.swing.JOptionPane;
+import internet.mangement.system.Login;
+import java.awt.Frame;
+
 /**
  *
  * @author Ngoc Thao
  */
-public class ForgotPassword extends javax.swing.JFrame {
+public class ForgotPassword extends javax.swing.JDialog {
+    private Subscriber currentSubscriber = null;
+    public String phonePattern = "^[0-9]*$";
 
     /**
      * Creates new form ForgotPassword
      */
-    public ForgotPassword() {
+    public ForgotPassword(Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
+
+        setTitle("Đổi mật khẩu");
+        setLocationRelativeTo(parent);
+
+        btnExit.setVisible(false);
+        btnChange.setVisible(false);
+        lbNewPassword.setVisible(false);
+        lbConfirmPassword.setVisible(false);
+        txtPassword.setVisible(false);
+        txtConfirmPassword.setVisible(false);
+    }
+
+    public void clear(){
+        txtPassword.setText("");
+        txtPhone.setText("");
+        txtConfirmPassword.setText("");
+
+        btnExit.setVisible(false);
+        btnChange.setVisible(false);
+        lbNewPassword.setVisible(false);
+        lbConfirmPassword.setVisible(false);
+        txtPassword.setVisible(false);
+        txtConfirmPassword.setVisible(false);
+    }
+
+    public boolean validatePhone(){
+        String phone = txtPhone.getText();
+        if(phone.length() != 10 || !phone.matches(phonePattern)) {
+            JOptionPane.showMessageDialog(null, "Vui lòng nhập đúng định dạng số điện thoại!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean validateFields(){
+        String password = txtPassword.getText();
+        String confirmPassword = txtConfirmPassword.getText();
+
+        if(password.isEmpty() || confirmPassword.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Vui lòng không bỏ trống!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if(!password.equals(confirmPassword)){
+            JOptionPane.showMessageDialog(null, "Mật khẩu xác nhận không khớp!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -28,8 +86,8 @@ public class ForgotPassword extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        lbNewPassword = new javax.swing.JLabel();
+        lbConfirmPassword = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         txtPhone = new javax.swing.JTextField();
         btnCheck = new javax.swing.JButton();
@@ -38,82 +96,178 @@ public class ForgotPassword extends javax.swing.JFrame {
         btnChange = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Arial", 1, 36)); // NOI18N
         jLabel1.setForeground(javax.swing.UIManager.getDefaults().getColor("Actions.Yellow"));
         jLabel1.setText("ĐỔI MẬT KHẨU");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(94, 48, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel2.setText("Số điện thoại: ");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(61, 121, -1, -1));
 
-        jLabel3.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel3.setText("Mật khẩu mới:");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(61, 161, -1, -1));
+        lbNewPassword.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        lbNewPassword.setText("Mật khẩu mới:");
 
-        jLabel4.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel4.setText("Xác nhận mật khẩu:");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(61, 201, -1, -1));
-        getContentPane().add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(61, 96, 370, 10));
-        getContentPane().add(txtPhone, new org.netbeans.lib.awtextra.AbsoluteConstraints(218, 118, 210, -1));
+        lbConfirmPassword.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        lbConfirmPassword.setText("Xác nhận mật khẩu:");
 
         btnCheck.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         btnCheck.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/search.png"))); // NOI18N
         btnCheck.setText("Kiểm tra");
-        getContentPane().add(btnCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 160, -1, 30));
-        getContentPane().add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(218, 158, 210, -1));
-        getContentPane().add(txtConfirmPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(217, 198, 211, -1));
+        btnCheck.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCheckActionPerformed(evt);
+            }
+        });
 
         btnChange.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         btnChange.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/reset-password.png"))); // NOI18N
         btnChange.setText("Đổi mật khẩu");
-        getContentPane().add(btnChange, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 250, -1, 30));
+        btnChange.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnChange.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnChangeActionPerformed(evt);
+            }
+        });
 
         btnExit.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         btnExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logout.png"))); // NOI18N
         btnExit.setText("Thoát");
-        getContentPane().add(btnExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 250, -1, 30));
+        btnExit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExitActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(110, 110, 110)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(61, 61, 61)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(61, 61, 61)
+                        .addComponent(jLabel2)
+                        .addGap(56, 56, 56)
+                        .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(61, 61, 61)
+                        .addComponent(lbNewPassword)
+                        .addGap(57, 57, 57)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(102, 102, 102)
+                                .addComponent(btnCheck))))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(60, 60, 60)
+                            .addComponent(btnExit)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnChange))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(61, 61, 61)
+                            .addComponent(lbConfirmPassword)
+                            .addGap(18, 18, 18)
+                            .addComponent(txtConfirmPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(69, 69, 69))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addComponent(jLabel1)
+                .addGap(14, 14, 14)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addComponent(jLabel2))
+                    .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addComponent(lbNewPassword))
+                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(2, 2, 2)
+                        .addComponent(btnCheck, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(8, 8, 8)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addComponent(lbConfirmPassword))
+                    .addComponent(txtConfirmPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(30, 30, 30)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnChange, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(40, Short.MAX_VALUE))
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ForgotPassword.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ForgotPassword.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ForgotPassword.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ForgotPassword.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
+        // TODO add your handling code here:
+        int result = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn thoát không?", "Thông báo", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ForgotPassword().setVisible(true);
+        if (result == JOptionPane.YES_OPTION) {
+            this.dispose();
+        }
+    }//GEN-LAST:event_btnExitActionPerformed
+
+    private void btnCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckActionPerformed
+        // TODO add your handling code here:
+        if(validatePhone()) {
+            String phone = txtPhone.getText();
+            currentSubscriber = SubscriberDAO.getByPhone(phone);
+
+            if (currentSubscriber != null) {
+                JOptionPane.showMessageDialog(null, "Tìm thấy tài khoản với số điện thoại này!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+
+                btnExit.setVisible(true);
+                btnChange.setVisible(true);
+                lbNewPassword.setVisible(true);
+                lbConfirmPassword.setVisible(true);
+                txtPassword.setVisible(true);
+                txtConfirmPassword.setVisible(true);
+
+                txtPhone.setEditable(false);
+                btnCheck.setEnabled(false);
+            } else {
+                JOptionPane.showMessageDialog(null, "Không tìm thấy tài khoản với số điện thoại này!", "Thông báo", JOptionPane.ERROR_MESSAGE);
             }
-        });
-    }
+        }
+    }//GEN-LAST:event_btnCheckActionPerformed
+
+    private void btnChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeActionPerformed
+        // TODO add your handling code here:
+        if(validateFields() && currentSubscriber != null){
+            String newPassword = txtPassword.getText();
+
+            boolean isSuccess = SubscriberDAO.updatePassword(currentSubscriber.getUser_id(), newPassword);
+
+            if(isSuccess) {
+                JOptionPane.showMessageDialog(this, "Đổi mật khẩu thành công! Vui lòng đăng nhập lại!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Đổi mật khẩu thất bại! Vui lòng thử lại sau!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_btnChangeActionPerformed
+
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChange;
@@ -121,9 +275,9 @@ public class ForgotPassword extends javax.swing.JFrame {
     private javax.swing.JButton btnExit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel lbConfirmPassword;
+    private javax.swing.JLabel lbNewPassword;
     private javax.swing.JPasswordField txtConfirmPassword;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtPhone;
