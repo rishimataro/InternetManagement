@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import DAO.DbOperations.SqlOperation;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 /**
  *
  * @author Ngoc Thao
@@ -25,7 +26,7 @@ public class UserDAO{
             new SqlOperation() {
                 @Override
                 public String getSql() {
-                    return "INSERT INTO USER(user_id, username, password, role, created_at) VALUES (?, ?, ?, ?, ?)";
+                    return "INSERT INTO USER(user_id, username, password, role, created_at, isActive) VALUES (?, ?, ?, ?, ?, ?)";
                 }
 
                 @Override
@@ -35,11 +36,27 @@ public class UserDAO{
                     ps.setString(3, obj.getPassword());
                     ps.setString(4, obj.getRole());
                     ps.setTimestamp(5, Timestamp.valueOf(obj.getCreate_at()));
+                    ps.setBoolean(6, obj.isIsActive());
                 }
             }
         };
 
         DbOperations.executeTransaction(operations, "Thêm tài khoản thành công!");
+    }
+
+    public static boolean checkUserName(String userName) {
+        boolean exists = false;
+        try{
+            ResultSet rs = DbOperations.getData("SELECT * FROM USER WHERE username = '" + userName + "'");
+            if(rs.next()) {
+                exists = true;
+            }
+            rs.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return exists;
     }
 
     public static User login(final String userName, final String password) {
@@ -67,7 +84,40 @@ public class UserDAO{
     }
 
     public static void update(User obj) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            StringBuilder query = new StringBuilder("UPDATE USER SET ");
+            boolean needComma = false;
+
+            // Only include fields that are not null
+            if (obj.getUsername() != null) {
+                query.append("username = '").append(obj.getUsername()).append("'");
+                needComma = true;
+            }
+
+            if (obj.getPassword() != null) {
+                if (needComma) query.append(", ");
+                query.append("password = '").append(obj.getPassword()).append("'");
+                needComma = true;
+            }
+
+            if (obj.getRole() != null) {
+                if (needComma) query.append(", ");
+                query.append("role = '").append(obj.getRole()).append("'");
+                needComma = true;
+            }
+
+            // Only include isActive in the update if it's explicitly set
+            if (obj.isIsActive() || !obj.isIsActive()) {
+                if (needComma) query.append(", ");
+                query.append("isActive = ").append(obj.isIsActive());
+            }
+
+            query.append(" WHERE user_id = ").append(obj.getUser_id());
+
+            DbOperations.setDataOrDelete(query.toString(), "Cập nhật thông tin người dùng thành công!");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static void delete(int id) {
@@ -78,8 +128,73 @@ public class UserDAO{
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public static List<User> getAll() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static ArrayList<User> getAll() {
+        ArrayList<User> userList = new ArrayList<>();
+        try {
+            ResultSet rs = DbOperations.getData("SELECT * FROM USER");
+            while (rs.next()) {
+                User user = new User();
+                user.setUser_id(rs.getInt("user_id"));
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(rs.getString("role"));
+                user.setCreate_at(rs.getTimestamp("created_at").toLocalDateTime());
+                user.setIsActive(rs.getBoolean("isActive"));
+                userList.add(user);
+            }
+            rs.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return userList;
+    }
+
+    public static ArrayList<User> getByCondition(String username, String role, String status, java.util.Date startDate, java.util.Date endDate) {
+        ArrayList<User> userList = new ArrayList<>();
+        try {
+            StringBuilder query = new StringBuilder("SELECT * FROM USER WHERE 1=1");
+
+            if (username != null && !username.isEmpty()) {
+                query.append(" AND username LIKE '%").append(username).append("%'");
+            }
+
+            if (role != null && !role.isEmpty() && !role.equals("Tất cả")) {
+                query.append(" AND role = '").append(role).append("'");
+            }
+
+            if (status != null && !status.isEmpty() && !status.equals("Tất cả")) {
+                boolean isActive = status.equals("Hoạt động");
+                query.append(" AND isActive = ").append(isActive);
+            }
+
+            if (startDate != null && endDate != null) {
+                java.sql.Timestamp startTimestamp = new java.sql.Timestamp(startDate.getTime());
+                java.sql.Timestamp endTimestamp = new java.sql.Timestamp(endDate.getTime());
+                query.append(" AND created_at >= '").append(startTimestamp).append("' AND create_at <= '").append(endTimestamp).append("'");
+            } else if (startDate != null) {
+                java.sql.Timestamp startTimestamp = new java.sql.Timestamp(startDate.getTime());
+                query.append(" AND created_at >= '").append(startTimestamp).append("'");
+            } else if (endDate != null) {
+                java.sql.Timestamp endTimestamp = new java.sql.Timestamp(endDate.getTime());
+                query.append(" AND created_at <= '").append(endTimestamp).append("'");
+            }
+
+            ResultSet rs = DbOperations.getData(query.toString());
+            while (rs.next()) {
+                User user = new User();
+                user.setUser_id(rs.getInt("user_id"));
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(rs.getString("role"));
+                user.setCreate_at(rs.getTimestamp("created_at").toLocalDateTime());
+                user.setIsActive(rs.getBoolean("isActive"));
+                userList.add(user);
+            }
+            rs.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return userList;
     }
 
 }
