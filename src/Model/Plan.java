@@ -11,7 +11,7 @@ package Model;
 public class Plan {
     private int plan_id;
     private String name;
-    private long price;
+    private double price;
     private double max_speed_domestic;
     private double max_speed_international;
     private double min_speed_domestic;
@@ -20,7 +20,7 @@ public class Plan {
     public Plan() {
     }
 
-    public Plan(int plan_id, String name, long price, double max_speed_domestic, double max_speed_international, double min_speed_domestic, double min_speed_international) {
+    public Plan(int plan_id, String name, double price, double max_speed_domestic, double max_speed_international, double min_speed_domestic, double min_speed_international) {
         this.plan_id = plan_id;
         this.name = name;
         this.price = price;
@@ -46,11 +46,11 @@ public class Plan {
         this.name = name;
     }
 
-    public long getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(long price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

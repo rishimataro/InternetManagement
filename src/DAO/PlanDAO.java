@@ -5,12 +5,12 @@
 package DAO;
 
 import Model.Plan;
+
+import java.sql.*;
 import java.util.List;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+
 import DAO.DbOperations.SqlOperation;
-import java.sql.SQLException;
+
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 /**
@@ -27,7 +27,7 @@ public class PlanDAO {
             new SqlOperation() {
                 @Override
                 public String getSql(){
-                    return "INSERT INTO PLAN(plan_id, name, price, max_speed_domestic, min_speed_domestinc, max_speed_international, min_speed_international) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    return "INSERT INTO PLAN(plan_id, name, price, max_speed_domestic, min_speed_domestic, max_speed_international, min_speed_international) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 }
                 @Override
                 public void setParameters(PreparedStatement ps) throws Exception{
@@ -41,7 +41,6 @@ public class PlanDAO {
                 }
             }  
         };
-        
         DbOperations.executeTransaction(operations, "Thêm gói cước thành công!");
 
     }
@@ -67,7 +66,7 @@ public class PlanDAO {
         DbOperations.executeTransaction(operations, "Cập nhật gói cước thành công!");
     }
 
-    public static void delete(int id) {
+    public static boolean delete(int id) {
         SqlOperation[] operations = new SqlOperation[]{
             new SqlOperation(){
                 @Override
@@ -80,54 +79,121 @@ public class PlanDAO {
                 }
             }
         };
-        DbOperations.executeTransaction(operations, "Xoá gói cước thành công!");
+        return DbOperations.executeTransaction(operations, "Xoá gói cước thành công!");
     }
 
-    public static Plan getById(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public static Plan getById(int id) throws SQLException {
+        String sql = "SELECT * FROM PLAN WHERE plan_id = ?";
+        Connection conn = ConnectionProvider.getConn();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            return new Plan(
+                    rs.getInt("plan_id"),
+                    rs.getString("name"),
+                    rs.getDouble("price"),
+                    rs.getInt("min_speed_domestic"),
+                    rs.getInt("max_speed_domestic"),
+                    rs.getInt("min_speed_international"),
+                    rs.getInt("max_speed_international")
+            );
+        }
+        return null;
     }
+    public static List<Plan> searchPlans(String keyword,
+                                     Double priceMin, Double priceMax,
+                                     Integer speedMinDomestic, Integer speedMaxDomestic,
+                                     Integer speedMinIntl, Integer speedMaxIntl) throws SQLException {
+    List<Plan> result = new ArrayList<>();
+    String sql = "SELECT * FROM PLAN WHERE 1=1";
+
+    if (keyword != null && !keyword.isEmpty()) {
+        sql += " AND (plan_id LIKE ? OR name LIKE ?)";
+    }
+    if (priceMin != null) sql += " AND price >= ?";
+    if (priceMax != null) sql += " AND price <= ?";
+    if (speedMinDomestic != null) sql += " AND min_speed_domestic >= ?";
+    if (speedMaxDomestic != null) sql += " AND max_speed_domestic <= ?";
+    if (speedMinIntl != null) sql += " AND min_speed_international >= ?";
+    if (speedMaxIntl != null) sql += " AND max_speed_international <= ?";
+
+    Connection conn = ConnectionProvider.getConn();
+    PreparedStatement stmt = conn.prepareStatement(sql);
+
+    int index = 1;
+    if (keyword != null && !keyword.isEmpty()) {
+        stmt.setString(index++, "%" + keyword + "%");
+        stmt.setString(index++, "%" + keyword + "%");
+    }
+    if (priceMin != null) stmt.setDouble(index++, priceMin);
+    if (priceMax != null) stmt.setDouble(index++, priceMax);
+    if (speedMinDomestic != null) stmt.setInt(index++, speedMinDomestic);
+    if (speedMaxDomestic != null) stmt.setInt(index++, speedMaxDomestic);
+    if (speedMinIntl != null) stmt.setInt(index++, speedMinIntl);
+    if (speedMaxIntl != null) stmt.setInt(index++, speedMaxIntl);
+
+    ResultSet rs = stmt.executeQuery();
+    while (rs.next()) {
+        Plan p = new Plan(
+            rs.getInt("plan_id"),
+            rs.getString("name"),
+            rs.getDouble("price"),
+            rs.getInt("min_speed_domestic"),
+            rs.getInt("max_speed_domestic"),
+            rs.getInt("min_speed_international"),
+            rs.getInt("max_speed_international")
+        );
+        result.add(p);
+    }
+
+    return result;
+}
+
 
     public static List<Plan> getAll() throws SQLException {
-        // String query = "SELECT * FROM PLAN";
-        // ResultSet rs = DbOperations.getData(query);
-        // List<Plan> plans = new ArrayList<>();
-        // try{
-        //     while(rs.next()){
-        //         Plan plan = new Plan();
-        //         plan.setPlan_id(rs.getInt("plan_id"));
-        //         plan.setName(rs.getString("name"));
-        //         plan.setPrice(rs.getLong("price"));
-        //         plan.setMax_speed_domestic(rs.getDouble("max_speed_domestic"));
-        //         plan.setMin_speed_domestic(rs.getDouble("min_speed_domestic"));
-        //         plan.setMax_speed_international(rs.getDouble("max_speed_international"));
-        //         plan.setMin_speed_international(rs.getDouble("min_speed_international"));
-        //     }
-            
-        // }catch (Exception e){
-        //         JOptionPane.showMessageDialog(null, e, "Message", JOptionPane.ERROR_MESSAGE);
-        //     }
-        // return plans;
+//     String query = "SELECT * FROM PLAN";
+//     ResultSet rs = DbOperations.getData(query);
+//     List<Plan> plans = new ArrayList<>();
+//     try{
+//         while(rs.next()){
+//             Plan plan = new Plan();
+//             plan.setPlan_id(rs.getInt("plan_id"));
+//             plan.setName(rs.getString("name"));
+//             plan.setPrice(rs.getLong("price"));
+//             plan.setMax_speed_domestic(rs.getDouble("max_speed_domestic"));
+//             plan.setMin_speed_domestic(rs.getDouble("min_speed_domestic"));
+//             plan.setMax_speed_international(rs.getDouble("max_speed_international"));
+//             plan.setMin_speed_international(rs.getDouble("min_speed_international"));
+//         }
+//
+//     }catch (Exception e){
+//             JOptionPane.showMessageDialog(null, e, "Message", JOptionPane.ERROR_MESSAGE);
+//         }
+//     return plans;
+        
         List<Plan> list = new ArrayList<>();
-    Connection conn = DBConnection.getConnection(); // đảm bảo hàm này đúng
-    String sql = "SELECT * FROM Plans";
-    Statement stmt = conn.createStatement();
-    ResultSet rs = stmt.executeQuery(sql);
-    
-    while (rs.next()) {
-        Plan plan = new Plan();
-        plan.setPlan_id(rs.getInt("Plan_id"));
-        plan.setName(rs.getString("Name"));
-        plan.setPrice(rs.getDouble("Price")); // hoặc float, double
-        plan.setMin_speed_domestic(rs.getInt("Min_speed_domestic"));
-        plan.setMax_speed_domestic(rs.getInt("Max_speed_domestic"));17
-        plan.setMin_speed_international(rs.getInt("Min_speed_international"));
-        plan.setMax_speed_international(rs.getInt("Max_speed_international"));
-        list.add(plan);
-    }
-    
-    rs.close();
-    stmt.close();
-    conn.close();
-    return list;
-    }
+        Connection conn = ConnectionProvider.getConn(); // đảm bảo hàm này đúng
+        String sql = "SELECT * FROM PLAN";
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
+
+        while (rs.next()) {
+            Plan plan = new Plan();
+            plan.setPlan_id(rs.getInt("Plan_id"));
+            plan.setName(rs.getString("Name"));
+            plan.setPrice(rs.getDouble("price")); // hoặc float, double
+            plan.setMin_speed_domestic(rs.getDouble("Min_speed_domestic"));
+            plan.setMax_speed_domestic(rs.getDouble("Max_speed_domestic"));
+            plan.setMin_speed_international(rs.getDouble("Min_speed_international"));
+            plan.setMax_speed_international(rs.getDouble("Max_speed_international"));
+            list.add(plan);
+        }
+
+        rs.close();
+        stmt.close();
+        conn.close();
+        return list;
+        }
 }

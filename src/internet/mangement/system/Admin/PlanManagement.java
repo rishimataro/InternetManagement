@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package internet.mangement.system;
+package internet.mangement.system.Admin;
 
 import DAO.PlanDAO;
 import Model.Plan;
@@ -22,40 +22,66 @@ public class PlanManagement extends javax.swing.JFrame {
      */
     public PlanManagement() {
         initComponents();
-//        setupTableSelectionListener();
+        setupTableSelectionListener();
+        InitBandwidthValue(0, 1000);
+        InitPricevalue(0, 10000000);
+        plan_table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int selectedRow = plan_table.getSelectedRow();
+                if (selectedRow >= 0) {
+                    DefaultTableModel model = (DefaultTableModel) plan_table.getModel();
 
-        try{
-            List<Plan> plans = PlanDAO.getAll();
-            for (Plan plan : plans){
-                System.out.println(plan.getPlan_id() + " - ");
+//                    txtId.setText(model.getValueAt(selectedRow, 0).toString());
+                    Selected_id = parseInt(model.getValueAt(selectedRow, 0).toString());
+                    txt_edit_PlanName.setText(model.getValueAt(selectedRow, 1).toString());
+                    txt_edit_PlanPrice.setText(model.getValueAt(selectedRow, 2).toString());
+                    txt_edit_Dom_max.setText(model.getValueAt(selectedRow, 3).toString());
+                    txt_edit_Dom_min.setText(model.getValueAt(selectedRow, 4).toString());
+                    txt_edit_Inter_max.setText(model.getValueAt(selectedRow, 5).toString());
+                    txt_edit_Inter_min.setText(model.getValueAt(selectedRow, 6).toString());
+                }
             }
-        }catch(Exception e){
-        e.printStackTrace();
-        }
-           
-        
-        DefaultTableModel model = (DefaultTableModel) plan_table.getModel();
-        model.setRowCount(0); // Xoá dữ liệu cũ nếu có
-        try{
-            List<Plan> list = PlanDAO.getAll();
-            System.out.println("So goi cuoc " + list.size());
-            // for (Plan pl : list){
-            //     Object[] row = {
-            //         pl.getPlan_id(),
-            //         pl.getName(),
-            //         pl.getPrice(),
-            //         pl.getMax_speed_domestic(),
-            //         pl.getMin_speed_domestic(),
-            //         pl.getMax_speed_international(),
-            //         pl.getMin_speed_international(),
-            //     };
-            //     model.addRow(row);
-            // }
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(null, e, "Message", JOptionPane.ERROR_MESSAGE);
+        });
+    }
+    private Double parseDouble(String s) {
+        try {
+            return (s == null || s.trim().isEmpty()) ? null : Double.parseDouble(s.trim());
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 
+    private Integer parseInt(String s) {
+        try {
+            return (s == null || s.trim().isEmpty()) ? null : Integer.parseInt(s.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+    private void InitBandwidthValue(int Min, int Max) {
+        jSlider_domesticMax.setMaximum(Max);
+        jSlider_domesticMin.setMaximum(Max);
+        jSlider_domesticMax.setValue(Max);
+        jSlider_domesticMin.setValue(Min);
+        txt_dom_min.setText(String.valueOf(Min));
+        txt_dom_max.setText(String.valueOf(Max));
+
+        jSlider_internationalMax.setMaximum(Max);
+        jSlider_internationalMin.setMaximum(Max);
+        jSlider_internationalMax.setValue(Max);
+        jSlider_internationalMin.setValue(Min);
+        txt_inter_max.setText(String.valueOf(Max));
+        txt_inter_min.setText(String.valueOf(Min));
+
+    }
+    private void InitPricevalue(int Min, int Max){
+        jSlider_priceMax.setMaximum(Max);
+        jSlider_priceMin.setMaximum(Max);
+        jSlider_priceMax.setValue(Max);
+        jSlider_priceMin.setValue(Min);
+        txt_price_min.setText(String.valueOf(Min));
+        txt_price_max.setText(String.valueOf(Max));
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -68,14 +94,14 @@ public class PlanManagement extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jPanel_SearchPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        txt_Plan_name = new javax.swing.JTextField();
+        btn_Search = new javax.swing.JButton();
         jPanel_BwFilterPanel = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jSlider_internationalMin = new javax.swing.JSlider();
         jSlider_internationalMax = new javax.swing.JSlider();
         jLabel4 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        checkbox_bw = new javax.swing.JCheckBox();
         jLabel5 = new javax.swing.JLabel();
         Dimension d = new Dimension(68, 26);
         txt_dom_min = new javax.swing.JTextField();
@@ -91,7 +117,7 @@ public class PlanManagement extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jPanel_PriceFilterPanel = new javax.swing.JPanel();
-        jCheckBox2 = new javax.swing.JCheckBox();
+        checkbox_price = new javax.swing.JCheckBox();
         jSlider_priceMin = new javax.swing.JSlider();
         jLabel16 = new javax.swing.JLabel();
         jSlider_priceMax = new javax.swing.JSlider();
@@ -100,14 +126,31 @@ public class PlanManagement extends javax.swing.JFrame {
         jLabel17 = new javax.swing.JLabel();
         txt_price_max = new javax.swing.JTextField();
         txt_price_min = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
+        btn_filter = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        txt_edit_PlanPrice = new javax.swing.JTextField();
+        txt_edit_PlanName = new javax.swing.JTextField();
+        txt_edit_Dom_min = new javax.swing.JTextField();
+        jLabel18 = new javax.swing.JLabel();
+        txt_edit_Dom_max = new javax.swing.JTextField();
+        txt_edit_Inter_max = new javax.swing.JTextField();
+        jLabel19 = new javax.swing.JLabel();
+        txt_edit_Inter_min = new javax.swing.JTextField();
+        jLabel13 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        btn_add = new javax.swing.JButton();
+        btn_edit = new javax.swing.JButton();
+        btn_delete = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         plan_table = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1366, 768));
 
         jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.Y_AXIS));
 
@@ -115,16 +158,16 @@ public class PlanManagement extends javax.swing.JFrame {
 
         jLabel1.setText("Tìm kiếm gói cước:");
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txt_Plan_name.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txt_Plan_nameActionPerformed(evt);
             }
         });
 
-        jButton1.setText("Tìm kiếm");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btn_Search.setText("Tìm kiếm");
+        btn_Search.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btn_SearchActionPerformed(evt);
             }
         });
 
@@ -148,10 +191,10 @@ public class PlanManagement extends javax.swing.JFrame {
 
         jLabel4.setText("Tốc độ tối đa quốc tế:");
 
-        jCheckBox1.setText("Lọc theo tốc độ");
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        checkbox_bw.setText("Lọc theo tốc độ");
+        checkbox_bw.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
+                checkbox_bwActionPerformed(evt);
             }
         });
 
@@ -252,7 +295,7 @@ public class PlanManagement extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel_BwFilterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_BwFilterPanelLayout.createSequentialGroup()
-                        .addComponent(jCheckBox1)
+                        .addComponent(checkbox_bw)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_BwFilterPanelLayout.createSequentialGroup()
                         .addGap(19, 19, 19)
@@ -287,7 +330,7 @@ public class PlanManagement extends javax.swing.JFrame {
             jPanel_BwFilterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_BwFilterPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jCheckBox1)
+                .addComponent(checkbox_bw)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(7, 7, 7)
@@ -314,14 +357,26 @@ public class PlanManagement extends javax.swing.JFrame {
 
         jPanel_PriceFilterPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jCheckBox2.setText(" Lọc theo giá cước");
-        jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
+        checkbox_price.setText(" Lọc theo giá cước");
+        checkbox_price.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox2ActionPerformed(evt);
+                checkbox_priceActionPerformed(evt);
+            }
+        });
+
+        jSlider_priceMin.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider_priceMinStateChanged(evt);
             }
         });
 
         jLabel16.setText("Giá cước:");
+
+        jSlider_priceMax.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSlider_priceMaxStateChanged(evt);
+            }
+        });
 
         jLabel14.setText("Giá cước tối đa:");
 
@@ -347,7 +402,7 @@ public class PlanManagement extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel_PriceFilterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel_PriceFilterPanelLayout.createSequentialGroup()
-                        .addComponent(jCheckBox2)
+                        .addComponent(checkbox_price)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_PriceFilterPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -377,7 +432,7 @@ public class PlanManagement extends javax.swing.JFrame {
             jPanel_PriceFilterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_PriceFilterPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jCheckBox2)
+                .addComponent(checkbox_price)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel_PriceFilterPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jSlider_priceMax, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -399,19 +454,24 @@ public class PlanManagement extends javax.swing.JFrame {
                     .addContainerGap()))
         );
 
-        jButton2.setText("Lọc");
+        btn_filter.setText("Lọc");
+        btn_filter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_filterActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel_SearchPanelLayout = new javax.swing.GroupLayout(jPanel_SearchPanel);
         jPanel_SearchPanel.setLayout(jPanel_SearchPanelLayout);
         jPanel_SearchPanelLayout.setHorizontalGroup(
             jPanel_SearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel_SearchPanelLayout.createSequentialGroup()
-                .addContainerGap(25, Short.MAX_VALUE)
+                .addContainerGap(41, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(txt_Plan_name, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addComponent(btn_Search)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_SearchPanelLayout.createSequentialGroup()
                 .addContainerGap()
@@ -423,7 +483,7 @@ public class PlanManagement extends javax.swing.JFrame {
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel_SearchPanelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btn_filter, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(51, 51, 51))
         );
         jPanel_SearchPanelLayout.setVerticalGroup(
@@ -432,14 +492,14 @@ public class PlanManagement extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel_SearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(txt_Plan_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_Search))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel_BwFilterPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel_PriceFilterPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
+                .addComponent(btn_filter)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -447,15 +507,142 @@ public class PlanManagement extends javax.swing.JFrame {
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Chi tiết"));
 
+        jLabel10.setText("Tên gói cước:");
+
+        jLabel11.setText("Giá gói:");
+
+        jLabel12.setText("Tốc độ trong nước:");
+
+        txt_edit_PlanPrice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_edit_PlanPriceActionPerformed(evt);
+            }
+        });
+
+        txt_edit_PlanName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_edit_PlanNameActionPerformed(evt);
+            }
+        });
+
+        txt_edit_Dom_min.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_edit_Dom_minActionPerformed(evt);
+            }
+        });
+
+        jLabel18.setText("-");
+
+        txt_edit_Dom_max.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_edit_Dom_maxActionPerformed(evt);
+            }
+        });
+
+        txt_edit_Inter_max.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_edit_Inter_maxActionPerformed(evt);
+            }
+        });
+
+        jLabel19.setText("-");
+
+        txt_edit_Inter_min.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_edit_Inter_minActionPerformed(evt);
+            }
+        });
+
+        jLabel13.setText("Tốc độ quốc tế:");
+
+        btn_add.setText("Thêm mới");
+        btn_add.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_addActionPerformed(evt);
+            }
+        });
+        jPanel6.add(btn_add);
+
+        btn_edit.setText("Cập nhật");
+        btn_edit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_editActionPerformed(evt);
+            }
+        });
+        jPanel6.add(btn_edit);
+
+        btn_delete.setText("Xoá gói");
+        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deleteActionPerformed(evt);
+            }
+        });
+        jPanel6.add(btn_delete);
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel12)
+                            .addComponent(jLabel11)
+                            .addComponent(jLabel10))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(txt_edit_Dom_min, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txt_edit_Dom_max, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(txt_edit_PlanPrice)
+                            .addComponent(txt_edit_PlanName)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                                .addComponent(txt_edit_Inter_min, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel19)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txt_edit_Inter_max, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(23, 23, 23))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(13, 13, 13)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(txt_edit_PlanName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txt_edit_PlanPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel11))
+                        .addGap(34, 34, 34))
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel12)
+                        .addComponent(txt_edit_Dom_min, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel18)
+                        .addComponent(txt_edit_Dom_max, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(txt_edit_Inter_min, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel19)
+                    .addComponent(txt_edit_Inter_max, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(15, 15, 15)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(92, Short.MAX_VALUE))
         );
 
         jPanel2.add(jPanel4);
@@ -464,7 +651,7 @@ public class PlanManagement extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 550, Short.MAX_VALUE)
+            .addGap(0, 582, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -494,7 +681,25 @@ public class PlanManagement extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        
+        DefaultTableModel model = (DefaultTableModel) plan_table.getModel();
+        model.setRowCount(0); // Xoá dữ liệu cũ nếu có
+        try{
+            List<Plan> ds = PlanDAO.getAll();
+            for (Plan pl : ds){
+                Object[] row = {
+                    pl.getPlan_id(),
+                    pl.getName(),
+                    pl.getPrice(),
+                    pl.getMax_speed_domestic(),
+                    pl.getMin_speed_domestic(),
+                    pl.getMax_speed_international(),
+                    pl.getMin_speed_international(),
+                };
+                model.addRow(row);
+            }
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e, "Message", JOptionPane.ERROR_MESSAGE);
+        }
         jScrollPane1.setViewportView(plan_table);
 
         jPanel3.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -520,65 +725,62 @@ public class PlanManagement extends javax.swing.JFrame {
                 };
                 model.addRow(row);
             }
-}catch(Exception e){
-    JOptionPane.showMessageDialog(null, e, "Message", JOptionPane.ERROR_MESSAGE);
-}
-        
-//        plan_table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer(){
-//            @Override
-//            public Component getTableCellRendererComponent(JTable table, Object value,
-//                                                           boolean isSelected, boolean hasFocus, int row, int column) {
-//
-//                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-//
-//                if (!isSelected) {
-//                    if (row % 2 != 0) {
-//                        c.setBackground(Color.WHITE);
-//                    } else {
-//                        c.setBackground(new Color(240, 240, 240));
-//                    }
-//                    c.setForeground(Color.BLACK);
-//                } else {
-//                    c.setBackground(table.getSelectionBackground());
-//                    c.setForeground(table.getSelectionForeground());
-//                }
-//
-//                return c;
-//            }
-//        });
-//
-//        txtUserId.setEditable(false);
-//        txtUserName.setEditable(false);
-//        txtPassword.setEditable(false);
-//        txtCreateAt.setEditable(false);
-//        txtStatus.setEditable(false);
-//        cmbRole2.setEnabled(false);
-//
-//        tblUser.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
-//            if (!e.getValueIsAdjusting()) {
-//                int selectedRow = tblUser.getSelectedRow();
-//                if (selectedRow != -1) {
-//                    displaySelectedUserDetails(selectedRow);
-//                }
-//            }
-//        });
-//        });
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e, "Message", JOptionPane.ERROR_MESSAGE);
+        }
+
     }
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btn_SearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SearchActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        try {
+            String keyword = txt_Plan_name.getText().trim();
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+            Double priceMin = (double) Min_price;
+            Double priceMax = (double) Max_price;
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
+            Integer speedMinDom = Min_bw;
+            Integer speedMaxDom = Max_bw;
 
-    private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
+            Integer speedMinIntl = Min_bw;
+            Integer speedMaxIntl = Max_bw;
+
+            List<Plan> results = PlanDAO.searchPlans(
+                    keyword,
+                    priceMin, priceMax,
+                    speedMinDom, speedMaxDom,
+                    speedMinIntl, speedMaxIntl
+            );
+
+            DefaultTableModel model = (DefaultTableModel) plan_table.getModel();
+            model.setRowCount(0);
+            for (Plan pl : results) {
+                Object[] row = {
+                        pl.getPlan_id(),
+                        pl.getName(),
+                        pl.getPrice(),
+                        pl.getMax_speed_domestic(),
+                        pl.getMin_speed_domestic(),
+                        pl.getMax_speed_international(),
+                        pl.getMin_speed_international()
+                };
+                model.addRow(row);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Lỗi khi tìm kiếm: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btn_SearchActionPerformed
+
+    private void txt_Plan_nameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_Plan_nameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox2ActionPerformed
+    }//GEN-LAST:event_txt_Plan_nameActionPerformed
+
+    private void checkbox_bwActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkbox_bwActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_checkbox_bwActionPerformed
+
+    private void checkbox_priceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkbox_priceActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_checkbox_priceActionPerformed
 
     private void jSlider_domesticMaxStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider_domesticMaxStateChanged
         // TODO add your handling code here:
@@ -654,6 +856,163 @@ public class PlanManagement extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập số hợp lệ cho tốc độ tối đa!");
         }
     }//GEN-LAST:event_txt_dom_maxActionPerformed
+
+    private void txt_edit_Dom_maxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_edit_Dom_maxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_edit_Dom_maxActionPerformed
+
+    private void txt_edit_Dom_minActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_edit_Dom_minActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_edit_Dom_minActionPerformed
+
+    private void txt_edit_PlanNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_edit_PlanNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_edit_PlanNameActionPerformed
+
+    private void txt_edit_PlanPriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_edit_PlanPriceActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_edit_PlanPriceActionPerformed
+
+    private void txt_edit_Inter_maxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_edit_Inter_maxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_edit_Inter_maxActionPerformed
+
+    private void txt_edit_Inter_minActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_edit_Inter_minActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_edit_Inter_minActionPerformed
+
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+        // TODO add your handling code here:
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xoá?");
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+//                int id = Integer.parseInt(txtId.getText());
+                boolean success = PlanDAO.delete(Selected_id);
+                if (success) {
+//                    JOptionPane.showMessageDialog(this, "Xoá thành công!");
+                    setupTableSelectionListener();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Xoá thất bại!");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btn_deleteActionPerformed
+
+    private void btn_filterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_filterActionPerformed
+        // TODO add your handling code here:
+        try {
+        String keyword = null;
+            Double priceMin = (double) Min_price;
+            Double priceMax = (double) Max_price;
+
+            Integer speedMinDom = Min_bw;
+            Integer speedMaxDom = Max_bw;
+
+            Integer speedMinIntl = Min_bw;
+            Integer speedMaxIntl = Max_bw;
+        if(checkbox_bw.isSelected()){
+            speedMinDom = parseInt(txt_dom_min.getText());
+            speedMaxDom = parseInt(txt_dom_max.getText());
+
+            speedMinIntl = parseInt(txt_inter_min.getText());
+            speedMaxIntl = parseInt(txt_inter_max.getText());
+        }
+        if(checkbox_price.isSelected()){
+            priceMin = parseDouble(txt_price_min.getText());
+            priceMax = parseDouble(txt_price_max.getText());
+        }
+
+
+
+        List<Plan> results = PlanDAO.searchPlans(
+            null,
+            priceMin, priceMax,
+            speedMinDom, speedMaxDom,
+            speedMinIntl, speedMaxIntl
+        );
+
+        DefaultTableModel model = (DefaultTableModel) plan_table.getModel();
+        model.setRowCount(0);
+        for (Plan pl : results) {
+            Object[] row = {
+                pl.getPlan_id(),
+                pl.getName(),
+                pl.getPrice(),
+                pl.getMax_speed_domestic(),
+                pl.getMin_speed_domestic(),
+                pl.getMax_speed_international(),
+                pl.getMin_speed_international()
+            };
+            model.addRow(row);
+        }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(null, "Lỗi khi tìm kiếm: " + ex.getMessage());
+    }
+    }//GEN-LAST:event_btn_filterActionPerformed
+
+    private void jSlider_priceMaxStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider_priceMaxStateChanged
+        // TODO add your handling code here:
+        int max = jSlider_priceMax.getValue();
+        int min = jSlider_priceMin.getValue();
+        if (max < min){
+            min = max;
+            jSlider_priceMin.setValue(min);
+            
+        }
+        txt_price_max.setText(String.valueOf(max));
+    }//GEN-LAST:event_jSlider_priceMaxStateChanged
+
+    private void jSlider_priceMinStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider_priceMinStateChanged
+        // TODO add your handling code here:
+        int max = jSlider_priceMax.getValue();
+        int min = jSlider_priceMin.getValue();
+        if (min > max){
+            max = min;
+            jSlider_priceMax.setValue(max);
+            
+        }
+        txt_price_min.setText(String.valueOf(min));
+    }//GEN-LAST:event_jSlider_priceMinStateChanged
+
+    private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
+        // TODO add your handling code here:
+        try {
+            Plan plan = new Plan(
+                    0, // ID thường auto-increment
+                    txt_edit_PlanName.getText(),
+                    Double.parseDouble(txt_edit_PlanPrice.getText()),
+                    Double.parseDouble(txt_edit_Dom_max.getText()),
+                    Double.parseDouble(txt_edit_Dom_min.getText()),
+                    Double.parseDouble(txt_edit_Inter_max.getText()),
+                    Double.parseDouble(txt_edit_Inter_min.getText())
+            );
+            PlanDAO.insert(plan);
+            setupTableSelectionListener();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btn_addActionPerformed
+
+    private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
+        // TODO add your handling code here:
+        try {
+            Plan plan = new Plan(
+                    Selected_id,
+                    txt_edit_PlanName.getText(),
+                    Double.parseDouble(txt_edit_PlanPrice.getText()),
+                    Double.parseDouble(txt_edit_Dom_max.getText()),
+                    Double.parseDouble(txt_edit_Dom_min.getText()),
+                    Double.parseDouble(txt_edit_Inter_max.getText()),
+                    Double.parseDouble(txt_edit_Inter_min.getText())
+            );
+            PlanDAO.update(plan);
+            setupTableSelectionListener();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btn_editActionPerformed
     
     /**
      * @param args the command line arguments
@@ -690,18 +1049,30 @@ public class PlanManagement extends javax.swing.JFrame {
             }
         });
     }
-    
-
+    private int Min_bw = 0;
+    private int Max_bw = 1000;
+    private int Min_price = 0;
+    private int Max_price = 10000000;
+    private int Selected_id = 0;
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
+    private javax.swing.JButton btn_Search;
+    private javax.swing.JButton btn_add;
+    private javax.swing.JButton btn_delete;
+    private javax.swing.JButton btn_edit;
+    private javax.swing.JButton btn_filter;
+    private javax.swing.JCheckBox checkbox_bw;
+    private javax.swing.JCheckBox checkbox_price;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -715,6 +1086,7 @@ public class PlanManagement extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel_BwFilterPanel;
     private javax.swing.JPanel jPanel_PriceFilterPanel;
     private javax.swing.JPanel jPanel_SearchPanel;
@@ -725,10 +1097,16 @@ public class PlanManagement extends javax.swing.JFrame {
     private javax.swing.JSlider jSlider_internationalMin;
     private javax.swing.JSlider jSlider_priceMax;
     private javax.swing.JSlider jSlider_priceMin;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTable plan_table;
+    private javax.swing.JTextField txt_Plan_name;
     private javax.swing.JTextField txt_dom_max;
     private javax.swing.JTextField txt_dom_min;
+    private javax.swing.JTextField txt_edit_Dom_max;
+    private javax.swing.JTextField txt_edit_Dom_min;
+    private javax.swing.JTextField txt_edit_Inter_max;
+    private javax.swing.JTextField txt_edit_Inter_min;
+    private javax.swing.JTextField txt_edit_PlanName;
+    private javax.swing.JTextField txt_edit_PlanPrice;
     private javax.swing.JTextField txt_inter_max;
     private javax.swing.JTextField txt_inter_min;
     private javax.swing.JTextField txt_price_max;
