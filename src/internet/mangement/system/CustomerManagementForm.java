@@ -4,17 +4,27 @@
  */
 package internet.mangement.system;
 
+import DAO.CustomerDAO;
+import Model.Customer;
+import java.util.List;
+import java.util.Vector;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author ADMIN
  */
 public class CustomerManagementForm extends javax.swing.JFrame {
 
+    private List<Customer> customerList;
+
     /**
-     * Creates new form CustomerManagement
+     * Creates new form CustomerManagementForm
      */
     public CustomerManagementForm() {
         initComponents();
+        setTitle("Quản lý khách hàng");
+        loadCustomerData();
     }
 
     /**
@@ -26,13 +36,173 @@ public class CustomerManagementForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1366, 768));
 
-        jLabel1.setText("Khách hàng");
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Quản lý khách hàng", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 18))); // NOI18N
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Mã khách hàng", "Tên khách hàng", "Địa chỉ", "Số điện thoại", "ID người dùng liên kết"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 710, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Tìm kiếm", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 18))); // NOI18N
+
+        jLabel1 = new javax.swing.JLabel();
+        jLabel1.setFont(new java.awt.Font("Arial", 1, 14));
+        jLabel1.setText("Tên khách hàng:");
+
+        txtSearchName = new javax.swing.JTextField();
+        txtSearchName.setFont(new java.awt.Font("Arial", 0, 14));
+
+        jLabel2 = new javax.swing.JLabel();
+        jLabel2.setFont(new java.awt.Font("Arial", 1, 14));
+        jLabel2.setText("Số điện thoại:");
+
+        txtSearchPhone = new javax.swing.JTextField();
+        txtSearchPhone.setFont(new java.awt.Font("Arial", 0, 14));
+
+        btnSearch = new javax.swing.JButton();
+        btnSearch.setFont(new java.awt.Font("Arial", 1, 14));
+        btnSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/search.png")));
+        btnSearch.setText("Tìm kiếm");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+
+        btnClear = new javax.swing.JButton();
+        btnClear.setFont(new java.awt.Font("Arial", 1, 14));
+        btnClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/undo.png")));
+        btnClear.setText("Làm mới");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
+
+        btnAdd = new javax.swing.JButton();
+        btnAdd.setFont(new java.awt.Font("Arial", 1, 14));
+        btnAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/more.png")));
+        btnAdd.setText("Thêm mới");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
+
+        btnEdit = new javax.swing.JButton();
+        btnEdit.setFont(new java.awt.Font("Arial", 1, 14));
+        btnEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/edit.png")));
+        btnEdit.setText("Sửa");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+
+        btnDelete = new javax.swing.JButton();
+        btnDelete.setFont(new java.awt.Font("Arial", 1, 14));
+        btnDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/delete.png")));
+        btnDelete.setText("Xóa");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+
+        btnReturn = new javax.swing.JButton();
+        btnReturn.setFont(new java.awt.Font("Arial", 1, 14));
+        btnReturn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/return.png")));
+        btnReturn.setText("Quay lại");
+        btnReturn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReturnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtSearchName)
+                    .addComponent(txtSearchPhone, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(150, 150, 150)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(40, 40, 40)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnReturn, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 185, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtSearchName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtSearchPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(30, 30, 30)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnReturn, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(31, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -40,19 +210,21 @@ public class CustomerManagementForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 856, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(504, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 528, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(212, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 723, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
 
         pack();
@@ -61,11 +233,152 @@ public class CustomerManagementForm extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
+    /**
+     * Load customer data from the database
+     */
+    private void loadCustomerData() {
+        customerList = CustomerDAO.getAllCustomers();
+        displayCustomersInTable(customerList);
+    }
+
+    /**
+     * Setup the table columns and properties
+     */
+    private void setupTable() {
+        // Set column names and properties
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setColumnIdentifiers(new String[] {
+            "Mã khách hàng", "Tên khách hàng", "Địa chỉ", "Số điện thoại", "ID người dùng liên kết"
+        });
+
+        // Make table cells non-editable
+        jTable1.setDefaultEditor(Object.class, null);
+
+        // Add selection listener
+        jTable1.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && jTable1.getSelectedRow() != -1) {
+                // Handle row selection if needed
+            }
+        });
+    }
+
+    /**
+     * Display customers in the table
+     * @param customers List of customers to display
+     */
+    private void displayCustomersInTable(List<Customer> customers) {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0); // Clear existing rows
+
+        for (Customer customer : customers) {
+            Vector<Object> row = new Vector<>();
+            row.add(customer.getSubscriber_id());
+            row.add(customer.getFullName());
+            row.add(customer.getAddress());
+            row.add(customer.getPhone());
+            row.add(customer.getUser_id());
+            model.addRow(row);
+        }
+    }
+
+    /**
+     * Search for customers based on criteria
+     */
+    private void searchCustomers() {
+        String name = txtSearchName.getText().trim();
+        String phone = txtSearchPhone.getText().trim();
+
+        List<Customer> searchResults = CustomerDAO.searchCustomers(name, phone);
+        displayCustomersInTable(searchResults);
+    }
+
+    /**
+     * Clear search fields and refresh the table
+     */
+    private void clearSearch() {
+        txtSearchName.setText("");
+        txtSearchPhone.setText("");
+        loadCustomerData();
+    }
+
+    /**
+     * Add a new customer
+     */
+    private void addCustomer() {
+        // Open a dialog to get customer information
+        // For now, we'll just create a dummy customer for testing
+        Customer newCustomer = new Customer();
+        newCustomer.setFullName("New Customer");
+        newCustomer.setAddress("123 Test Street");
+        newCustomer.setPhone("0123456789");
+        newCustomer.setUsername("newuser");
+        newCustomer.setPassword("password");
+        newCustomer.setRole("user");
+        newCustomer.setCreate_at(LocalDateTime.now());
+        newCustomer.setIsActive(true);
+
+        boolean success = CustomerDAO.addCustomer(newCustomer);
+        if (success) {
+            loadCustomerData();
+        }
+    }
+
+    /**
+     * Edit the selected customer
+     */
+    private void editCustomer() {
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một khách hàng để sửa", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int customerId = (int) jTable1.getValueAt(selectedRow, 0);
+        Customer customer = CustomerDAO.getCustomerById(customerId);
+
+        if (customer != null) {
+            // Open a dialog to edit customer information
+            // For now, we'll just update some fields for testing
+            customer.setFullName(customer.getFullName() + " (Edited)");
+            customer.setAddress(customer.getAddress() + " (Edited)");
+
+            boolean success = CustomerDAO.updateCustomer(customer);
+            if (success) {
+                loadCustomerData();
+            }
+        }
+    }
+
+    /**
+     * Delete the selected customer
+     */
+    private void deleteCustomer() {
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một khách hàng để xóa", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int customerId = (int) jTable1.getValueAt(selectedRow, 0);
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Bạn có chắc chắn muốn xóa khách hàng này?",
+                "Xác nhận xóa",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean success = CustomerDAO.deleteCustomer(customerId);
+            if (success) {
+                loadCustomerData();
+            }
+        }
+    }
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -84,7 +397,6 @@ public class CustomerManagementForm extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(CustomerManagementForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -94,8 +406,44 @@ public class CustomerManagementForm extends javax.swing.JFrame {
         });
     }
 
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {
+        searchCustomers();
+    }
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {
+        clearSearch();
+    }
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {
+        addCustomer();
+    }
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {
+        editCustomer();
+    }
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {
+        deleteCustomer();
+    }
+
+    private void btnReturnActionPerformed(java.awt.event.ActionEvent evt) {
+        this.dispose();
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnClear;
+    private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnReturn;
+    private javax.swing.JButton btnSearch;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTextField txtSearchName;
+    private javax.swing.JTextField txtSearchPhone;
     // End of variables declaration//GEN-END:variables
 }
