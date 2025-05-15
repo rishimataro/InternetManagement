@@ -103,7 +103,7 @@ public class SubscriberDAO{
     public static boolean updatePassword(int userId, String newPassword) {
         try {
             String query = "UPDATE USER SET password = '" + newPassword + "' WHERE user_id = " + userId;
-            DbOperations.setDataOrDelete(query, "Đổi mật khẩu thành công! Vui lòng đăng nhập lại!");
+            DbOperations.setDataOrDelete(query, "");
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
