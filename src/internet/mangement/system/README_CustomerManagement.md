@@ -7,61 +7,39 @@ This package contains classes for managing customers in the Internet Management 
 The customer management system consists of the following components:
 
 1. **CustomerManagementForm** - The main form for displaying and managing customers
-2. **CustomerManagementFormHelper** - Helper class for handling database operations
-3. **CustomerDialog** - Dialog for adding and editing customers
-4. **CustomerDAO** - Data Access Object for customer database operations
-5. **Customer** - Model class representing a customer
+2. **CustomerManagementFormEnhanced** - Enhanced version that uses the controller
+3. **CustomerFormController** - Controller class for handling events and database operations
+4. **CustomerDialog** - Dialog for adding and editing customers
+5. **CustomerDAO** - Data Access Object for customer database operations
+6. **Customer** - Model class representing a customer
 
 ## How to Use
 
-### Using the CustomerManagementFormHelper
+### Using the Enhanced Form
 
-The `CustomerManagementFormHelper` class is designed to work with the existing `CustomerManagementForm` without modifying it. To use it:
-
-1. Create an instance of `CustomerManagementFormHelper` in your form:
+The easiest way to use the customer management system is to run the `CustomerManagementFormEnhanced` class:
 
 ```java
-private CustomerManagementFormHelper helper;
-
-public CustomerManagementForm() {
-    initComponents();
-    setTitle("Quản lý khách hàng");
-    
-    // Initialize the helper
-    helper = new CustomerManagementFormHelper(this, jTable1);
-    
-    // Load customer data
-    helper.loadCustomerData();
+public static void main(String[] args) {
+    SwingUtilities.invokeLater(() -> {
+        new CustomerManagementFormEnhanced().setVisible(true);
+    });
 }
 ```
 
-2. Call the helper methods from your form's event handlers:
+This form automatically initializes the controller and connects all the event handlers.
+
+### Using the Controller with the Original Form
+
+If you want to use the controller with the original form, you can create an instance of the controller and pass the form to it:
 
 ```java
-private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {
-    String name = txtSearchName.getText().trim();
-    String phone = txtSearchPhone.getText().trim();
-    helper.searchCustomers(name, phone);
-}
-
-private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {
-    txtSearchName.setText("");
-    txtSearchPhone.setText("");
-    helper.loadCustomerData();
-}
-
-private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {
-    helper.addCustomer();
-}
-
-private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {
-    helper.editCustomer();
-}
-
-private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {
-    helper.deleteCustomer();
-}
+CustomerManagementForm form = new CustomerManagementForm();
+CustomerFormController controller = new CustomerFormController(form);
+form.setVisible(true);
 ```
+
+The controller will automatically connect to the form's components and handle all events.
 
 ### Using the CustomerDialog
 
@@ -90,15 +68,6 @@ if (dialog.isConfirmed()) {
 }
 ```
 
-## Testing
-
-Two test classes are provided:
-
-1. **CustomerDialogTest** - Tests the CustomerDialog for adding and editing customers
-2. **CustomerManagementFormTest** - Tests the CustomerManagementForm with the helper
-
-To run the tests, execute the main method in either class.
-
 ## Database Schema
 
 The customer management system uses two tables:
@@ -125,3 +94,38 @@ The customer management system uses two tables:
     - Customer
 
 The Customer class extends Subscriber, which extends User, providing a complete model for customer management.
+
+## Implementation Details
+
+### CustomerFormController
+
+The `CustomerFormController` class uses reflection to access the form's components. This allows it to work with the original form without modifying it. The controller:
+
+1. Gets references to all form components
+2. Adds event listeners to the components
+3. Handles all database operations through the CustomerDAO
+
+### CustomerDialog
+
+The `CustomerDialog` class provides a reusable dialog for adding and editing customers. It:
+
+1. Creates a form with fields for all customer properties
+2. Validates user input
+3. Returns the customer object with updated information
+
+### CustomerDAO
+
+The `CustomerDAO` class handles all database operations for customers. It:
+
+1. Connects to the database using ConnectionProvider
+2. Executes SQL queries using DbOperations
+3. Converts between database records and Customer objects
+
+## Troubleshooting
+
+If you encounter issues with the customer management system:
+
+1. Check the database connection in ConnectionProvider
+2. Verify that the USER and SUBSCRIBER tables exist with the correct schema
+3. Make sure the form components match the expected names in CustomerFormController
+4. Check the console for any exceptions or error messages
