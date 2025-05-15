@@ -4,17 +4,53 @@
  */
 package internet.mangement.system;
 
+import DAO.BillingDAO;
+import Model.Billing;
+import com.formdev.flatlaf.FlatLightLaf;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.table.DefaultTableModel;
+
 /**
- *
+ * Form for managing billing history
  * @author ADMIN
  */
 public class BillingHistoryForm extends javax.swing.JFrame {
+
+    private List<Billing> billingList;
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private final String[] statuses = {"paid", "unpaid"};
 
     /**
      * Creates new form BillingHistoryForm
      */
     public BillingHistoryForm() {
+        try {
+            UIManager.setLookAndFeel(new FlatLightLaf());
+        } catch (Exception ex) {
+            System.err.println("Failed to initialize FlatLaf");
+        }
+
         initComponents();
+        setTitle("Quản lý lịch sử gói cước");
+        setupComponents();
+        loadBillingData();
+
+        // Add row selection listener to populate detail fields
+        jTable2.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && jTable2.getSelectedRow() != -1) {
+                displaySelectedBilling();
+            }
+        });
     }
 
     /**
@@ -42,16 +78,16 @@ public class BillingHistoryForm extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
         jTextField3 = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
         jTextField4 = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
         jTextField5 = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
         jComboBox3 = new javax.swing.JComboBox<>();
+        jLabel10 = new javax.swing.JLabel();
         jTextField6 = new javax.swing.JTextField();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
@@ -184,6 +220,12 @@ public class BillingHistoryForm extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jLabel5.setText("Mã hóa đơn:");
 
+        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField2ActionPerformed(evt);
+            }
+        });
+
         jLabel6.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jLabel6.setText("Mã hợp đồng:");
 
@@ -193,22 +235,16 @@ public class BillingHistoryForm extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jLabel8.setText("Số tiền:");
 
+        jTextField5.setToolTipText("");
+
         jLabel9.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jLabel9.setText("Trạng thái");
+
+        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel10.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jLabel10.setText("Ngày thanh toán:");
         jLabel10.setToolTipText("");
-
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
-            }
-        });
-
-        jTextField5.setToolTipText("");
-
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jButton3.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/update.png"))); // NOI18N
@@ -349,36 +385,398 @@ public class BillingHistoryForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Set up the form components
+     */
+    private void setupComponents() {
+        // Set up the combo boxes
+        jComboBox2.setModel(new DefaultComboBoxModel<>(statuses));
+        jComboBox3.setModel(new DefaultComboBoxModel<>(statuses));
+
+        // Set up the table
+        setupTable();
+
+        // Add action listeners to buttons
+        jButton1.addActionListener(e -> clearSearch());
+        jButton2.addActionListener(e -> searchBillings());
+        jButton3.addActionListener(e -> updateBillingStatus());
+        jButton4.addActionListener(e -> addBilling());
+        jButton5.addActionListener(e -> editBilling());
+        jButton6.addActionListener(e -> deleteBilling());
+        jButton7.addActionListener(e -> this.dispose());
+    }
+
+    /**
+     * Set up the table columns and properties
+     */
+    private void setupTable() {
+        // Set column names and properties
+        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+        model.setColumnIdentifiers(new String[] {
+            "Mã hóa đơn", "Mã hợp đồng", "Kỳ thanh toán", "Số tiền", "Trạng thái", "Ngày thanh toán"
+        });
+
+        // Make table cells non-editable
+        jTable2.setDefaultEditor(Object.class, null);
+    }
+
+    /**
+     * Load billing data from the database
+     */
+    private void loadBillingData() {
+        billingList = BillingDAO.getAllBillings();
+        displayBillingsInTable(billingList);
+    }
+
+    /**
+     * Display billings in the table
+     * @param billings List of billings to display
+     */
+    private void displayBillingsInTable(List<Billing> billings) {
+        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+        model.setRowCount(0); // Clear existing rows
+
+        for (Billing billing : billings) {
+            Vector<Object> row = new Vector<>();
+            row.add(billing.getBillingId());
+            row.add(billing.getContractId());
+
+            if (billing.getBillingPeriod() != null) {
+                row.add(billing.getBillingPeriod().format(dateFormatter));
+            } else {
+                row.add("");
+            }
+
+            row.add(billing.getAmount());
+            row.add(billing.getStatus());
+
+            if (billing.getPaymentDate() != null) {
+                row.add(billing.getPaymentDate().format(dateTimeFormatter));
+            } else {
+                row.add("");
+            }
+
+            model.addRow(row);
+        }
+    }
+
+    /**
+     * Display the selected billing's details in the form fields
+     */
+    private void displaySelectedBilling() {
+        int selectedRow = jTable2.getSelectedRow();
+        if (selectedRow != -1) {
+            int billingId = (int) jTable2.getValueAt(selectedRow, 0);
+            Billing billing = BillingDAO.getBillingById(billingId);
+
+            if (billing != null) {
+                // Update the detail fields with billing information
+                jTextField2.setText(String.valueOf(billing.getBillingId()));
+                jTextField3.setText(String.valueOf(billing.getContractId()));
+
+                // Display billing period
+                if (billing.getBillingPeriod() != null) {
+                    jTextField4.setText(billing.getBillingPeriod().format(dateFormatter));
+                } else {
+                    jTextField4.setText("");
+                }
+
+                jTextField5.setText(String.valueOf(billing.getAmount()));
+
+                // Set status in combo box
+                for (int i = 0; i < statuses.length; i++) {
+                    if (statuses[i].equals(billing.getStatus())) {
+                        jComboBox3.setSelectedIndex(i);
+                        break;
+                    }
+                }
+
+                // Display payment date
+                if (billing.getPaymentDate() != null) {
+                    jTextField6.setText(billing.getPaymentDate().format(dateTimeFormatter));
+                } else {
+                    jTextField6.setText("");
+                }
+            }
+        }
+    }
+
+    /**
+     * Search for billings based on criteria
+     */
+    private void searchBillings() {
+        String contractIdStr = jTextField1.getText().trim();
+        String status = (String) jComboBox2.getSelectedItem();
+
+        List<Billing> searchResults;
+        if (!contractIdStr.isEmpty()) {
+            try {
+                int contractId = Integer.parseInt(contractIdStr);
+                searchResults = BillingDAO.getBillingsByContractId(contractId);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Mã hợp đồng phải là số", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } else {
+            // Search by status
+            searchResults = new ArrayList<>();
+            for (Billing billing : billingList) {
+                boolean matchStatus = billing.getStatus().equals(status);
+
+                if (matchStatus) {
+                    searchResults.add(billing);
+                }
+            }
+        }
+
+        displayBillingsInTable(searchResults);
+    }
+
+    /**
+     * Clear search fields and refresh the table
+     */
+    private void clearSearch() {
+        jTextField1.setText("");
+        jComboBox2.setSelectedIndex(0);
+        loadBillingData();
+    }
+
+    /**
+     * Add a new billing
+     */
+    private void addBilling() {
+        // Get values from form fields
+        String contractIdStr = jTextField3.getText().trim();
+        String billingPeriodStr = jTextField4.getText().trim();
+        String amountStr = jTextField5.getText().trim();
+        String status = (String) jComboBox3.getSelectedItem();
+        String paymentDateStr = jTextField6.getText().trim();
+
+        // Validate input
+        if (contractIdStr.isEmpty() || billingPeriodStr.isEmpty() || amountStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin hóa đơn", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            int contractId = Integer.parseInt(contractIdStr);
+            double amount = Double.parseDouble(amountStr);
+
+            // Create new billing
+            Billing newBilling = new Billing();
+            newBilling.setContractId(contractId);
+            newBilling.setAmount(amount);
+            newBilling.setStatus(status);
+
+            // Parse billing period
+            try {
+                LocalDate billingPeriod = LocalDate.parse(billingPeriodStr, dateFormatter);
+                newBilling.setBillingPeriod(billingPeriod);
+            } catch (DateTimeParseException e) {
+                JOptionPane.showMessageDialog(this, "Kỳ thanh toán không hợp lệ. Vui lòng nhập theo định dạng dd/MM/yyyy", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Parse payment date if provided
+            if (!paymentDateStr.isEmpty()) {
+                try {
+                    LocalDateTime paymentDate = LocalDateTime.parse(paymentDateStr, dateTimeFormatter);
+                    newBilling.setPaymentDate(paymentDate);
+                } catch (DateTimeParseException e) {
+                    try {
+                        // Try parsing as date only and add default time
+                        LocalDate paymentDate = LocalDate.parse(paymentDateStr, dateFormatter);
+                        newBilling.setPaymentDate(paymentDate.atTime(0, 0, 0));
+                    } catch (DateTimeParseException ex) {
+                        JOptionPane.showMessageDialog(this, "Ngày thanh toán không hợp lệ. Vui lòng nhập theo định dạng dd/MM/yyyy", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+            }
+
+            boolean success = BillingDAO.addBilling(newBilling);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Thêm hóa đơn thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                clearDetailFields();
+                loadBillingData();
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Mã hợp đồng và số tiền phải là số", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Edit the selected billing
+     */
+    private void editBilling() {
+        int selectedRow = jTable2.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hóa đơn để sửa", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Get values from form fields
+        String billingIdStr = jTextField2.getText().trim();
+        String contractIdStr = jTextField3.getText().trim();
+        String billingPeriodStr = jTextField4.getText().trim();
+        String amountStr = jTextField5.getText().trim();
+        String status = (String) jComboBox3.getSelectedItem();
+        String paymentDateStr = jTextField6.getText().trim();
+
+        // Validate input
+        if (billingIdStr.isEmpty() || contractIdStr.isEmpty() || billingPeriodStr.isEmpty() || amountStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin hóa đơn", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            int billingId = Integer.parseInt(billingIdStr);
+            int contractId = Integer.parseInt(contractIdStr);
+            double amount = Double.parseDouble(amountStr);
+
+            // Get the existing billing
+            Billing billing = BillingDAO.getBillingById(billingId);
+            if (billing == null) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Update billing
+            billing.setContractId(contractId);
+            billing.setAmount(amount);
+            billing.setStatus(status);
+
+            // Parse billing period
+            try {
+                LocalDate billingPeriod = LocalDate.parse(billingPeriodStr, dateFormatter);
+                billing.setBillingPeriod(billingPeriod);
+            } catch (DateTimeParseException e) {
+                JOptionPane.showMessageDialog(this, "Kỳ thanh toán không hợp lệ. Vui lòng nhập theo định dạng dd/MM/yyyy", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Parse payment date if provided
+            if (!paymentDateStr.isEmpty()) {
+                try {
+                    LocalDateTime paymentDate = LocalDateTime.parse(paymentDateStr, dateTimeFormatter);
+                    billing.setPaymentDate(paymentDate);
+                } catch (DateTimeParseException e) {
+                    try {
+                        // Try parsing as date only and add default time
+                        LocalDate paymentDate = LocalDate.parse(paymentDateStr, dateFormatter);
+                        billing.setPaymentDate(paymentDate.atTime(0, 0, 0));
+                    } catch (DateTimeParseException ex) {
+                        JOptionPane.showMessageDialog(this, "Ngày thanh toán không hợp lệ. Vui lòng nhập theo định dạng dd/MM/yyyy", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+            } else {
+                billing.setPaymentDate(null);
+            }
+
+            boolean success = BillingDAO.updateBilling(billing);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Cập nhật hóa đơn thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                loadBillingData();
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Mã hóa đơn, mã hợp đồng và số tiền phải là số", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Delete the selected billing
+     */
+    private void deleteBilling() {
+        int selectedRow = jTable2.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hóa đơn để xóa", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int billingId = (int) jTable2.getValueAt(selectedRow, 0);
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Bạn có chắc chắn muốn xóa hóa đơn này?",
+                "Xác nhận xóa",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean success = BillingDAO.deleteBilling(billingId);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Xóa hóa đơn thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                clearDetailFields();
+                loadBillingData();
+            }
+        }
+    }
+
+    /**
+     * Update the status of the selected billing
+     */
+    private void updateBillingStatus() {
+        int selectedRow = jTable2.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hóa đơn để cập nhật trạng thái", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int billingId = (int) jTable2.getValueAt(selectedRow, 0);
+        String status = (String) jComboBox3.getSelectedItem();
+
+        boolean success = BillingDAO.updateBillingStatus(billingId, status);
+        if (success) {
+            JOptionPane.showMessageDialog(this, "Cập nhật trạng thái hóa đơn thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            loadBillingData();
+        }
+    }
+
+    /**
+     * Clear the detail fields
+     */
+    private void clearDetailFields() {
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jTextField4.setText("");
+        jTextField5.setText("");
+        jTextField6.setText("");
+        jComboBox3.setSelectedIndex(0);
+    }
+
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
+        // No action needed
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
+        // No action needed
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
+        addBilling();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
+        /* Set the FlatLaf look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+            // Try to use FlatLaf if available
+            try {
+                Class.forName("com.formdev.flatlaf.FlatLightLaf");
+                UIManager.setLookAndFeel(new FlatLightLaf());
+            } catch (ClassNotFoundException ex) {
+                // FlatLaf not available, use Nimbus instead
+                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                    if ("Nimbus".equals(info.getName())) {
+                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
                 }
             }
         } catch (ClassNotFoundException ex) {
