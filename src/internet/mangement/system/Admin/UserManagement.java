@@ -14,9 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.ListSelectionModel;
-import internet.mangement.system.Admin.ChangePasswordDialog;
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JFrame;
@@ -67,7 +65,7 @@ public class UserManagement extends javax.swing.JFrame {
                 return c;
             }
         });
-        
+
         txtUserId.setEditable(false);
         txtUserName.setEditable(false);
         txtPassword.setEditable(false);
@@ -638,7 +636,7 @@ public class UserManagement extends javax.swing.JFrame {
         }
 
         try {
-            
+
             String username = txtUserName.getText().trim();
             String password = txtPassword.getText().trim();
 
@@ -671,16 +669,23 @@ public class UserManagement extends javax.swing.JFrame {
             newUser.setIsActive(true);
 
             // Save to database
-            UserDAO.insert(newUser);
+            try {
+                UserDAO.insert(newUser);
 
-            // Reset UI
-            txtUserName.setEditable(false);
-            txtPassword.setEditable(false);
-            cmbRole2.setEnabled(false);
-            btnAdd.setText("Thêm");
+                // Show success message
+                JOptionPane.showMessageDialog(null, "Thêm tài khoản mới thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 
-            // Refresh the table
-            getAllRecords();
+                // Reset UI
+                txtUserName.setEditable(false);
+                txtPassword.setEditable(false);
+                cmbRole2.setEnabled(false);
+                btnAdd.setText("Thêm");
+
+                // Refresh the table
+                getAllRecords();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Không thể thêm tài khoản mới. Vui lòng thử lại sau!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Lỗi: " + ex.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
@@ -710,25 +715,33 @@ public class UserManagement extends javax.swing.JFrame {
                     JOptionPane.YES_NO_OPTION);
 
             if (confirm == JOptionPane.YES_OPTION) {
-                User user = new User();
-                user.setUser_id(userId);
-                user.setIsActive(true);
+                // Create a simple SQL query to update only the isActive field
+                String query = "UPDATE USER SET isActive = true WHERE user_id = " + userId;
+                boolean success = false;
 
-                // We only need to update the isActive field, so set other fields to null
-                user.setUsername(null);
-                user.setPassword(null);
-                user.setRole(null);
+                try {
+                    DAO.DbOperations.setDataOrDelete(query, "Mở khóa tài khoản thành công!");
+                    success = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                UserDAO.update(user);
 
-                txtStatus.setText("Hoạt động");
+                if (success) {
+                    txtStatus.setText("Hoạt động");
 
-                JOptionPane.showMessageDialog(null,
-                        "Đã mở khóa tài khoản '" + username + "'!",
-                        "Thông báo",
-                        JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null,
+                            "Đã mở khóa tài khoản '" + username + "'!",
+                            "Thông báo",
+                            JOptionPane.INFORMATION_MESSAGE);
 
-                getAllRecords();
+                    getAllRecords();
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Không thể mở khóa tài khoản. Vui lòng thử lại sau!",
+                            "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Lỗi: " + ex.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
@@ -758,25 +771,34 @@ public class UserManagement extends javax.swing.JFrame {
                     JOptionPane.YES_NO_OPTION);
 
             if (confirm == JOptionPane.YES_OPTION) {
-                User user = new User();
-                user.setUser_id(userId);
-                user.setIsActive(false);
+                // Create a simple SQL query to update only the isActive field
+                String query = "UPDATE USER SET isActive = false WHERE user_id = " + userId;
+                boolean success = false;
 
-                // We only need to update the isActive field, so set other fields to null
-                user.setUsername(null);
-                user.setPassword(null);
-                user.setRole(null);
+                try {
+                    DAO.DbOperations.setDataOrDelete(query, "Khóa tài khoản thành công!");
+                    success = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                UserDAO.update(user);
+                // success is already set above
 
-                txtStatus.setText("Bị khóa");
+                if (success) {
+                    txtStatus.setText("Bị khóa");
 
-                JOptionPane.showMessageDialog(null,
-                        "Đã khóa tài khoản '" + username + "'!",
-                        "Thông báo",
-                        JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null,
+                            "Đã khóa tài khoản '" + username + "'!",
+                            "Thông báo",
+                            JOptionPane.INFORMATION_MESSAGE);
 
-                getAllRecords();
+                    getAllRecords();
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Không thể khóa tài khoản. Vui lòng thử lại sau!",
+                            "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Lỗi: " + ex.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
@@ -855,12 +877,19 @@ public class UserManagement extends javax.swing.JFrame {
             user.setPassword(password);
             user.setRole(role);
 
-            UserDAO.update(user);
+            boolean success = UserDAO.update(user);
 
-            txtUserName.setEditable(false);
-            txtPassword.setEditable(false);
-            cmbRole2.setEnabled(false);
-            btnFix.setText("Sửa");
+            if (success) {
+                txtUserName.setEditable(false);
+                txtPassword.setEditable(false);
+                cmbRole2.setEnabled(false);
+                btnFix.setText("Sửa");
+
+                JOptionPane.showMessageDialog(null, "Cập nhật thông tin người dùng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Không thể cập nhật thông tin người dùng. Vui lòng thử lại sau!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
             getAllRecords();
 

@@ -5,7 +5,6 @@
 package DAO;
 
 import Model.User;
-import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import DAO.DbOperations.SqlOperation;
@@ -83,7 +82,7 @@ public class UserDAO{
         return user;
     }
 
-    public static void update(User obj) {
+    public static boolean update(User obj) {
         try {
             StringBuilder query = new StringBuilder("UPDATE USER SET ");
             boolean needComma = false;
@@ -106,17 +105,32 @@ public class UserDAO{
                 needComma = true;
             }
 
-            // Only include isActive in the update if it's explicitly set
-            if (obj.isIsActive() || !obj.isIsActive()) {
+            // Check if isActive is explicitly set using a separate flag
+            boolean isActiveSet = false;
+            try {
+                // This will throw NullPointerException if isActive is not set
+                boolean isActive = obj.isIsActive();
+                isActiveSet = true;
+
                 if (needComma) query.append(", ");
-                query.append("isActive = ").append(obj.isIsActive());
+                query.append("isActive = ").append(isActive);
+                needComma = true;
+            } catch (Exception e) {
+                // isActive is not set, ignore
+            }
+
+            // If no fields to update, return false
+            if (!needComma) {
+                return false;
             }
 
             query.append(" WHERE user_id = ").append(obj.getUser_id());
 
-            DbOperations.setDataOrDelete(query.toString(), "Cập nhật thông tin người dùng thành công!");
+            DbOperations.setDataOrDelete(query.toString(), "");
+            return true;
         } catch (Exception ex) {
             ex.printStackTrace();
+            return false;
         }
     }
 

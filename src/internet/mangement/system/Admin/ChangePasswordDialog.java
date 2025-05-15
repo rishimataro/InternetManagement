@@ -4,6 +4,7 @@
  */
 package internet.mangement.system.Admin;
 
+import DAO.DbOperations;
 import DAO.UserDAO;
 import Model.User;
 import javax.swing.JOptionPane;
@@ -26,7 +27,7 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
         initComponents();
         setLocationRelativeTo(parent);
     }
-    
+
     public ChangePasswordDialog(java.awt.Frame parent, boolean modal, int userId, String username) {
         super(parent, modal);
         initComponents();
@@ -36,30 +37,30 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
         setLocationRelativeTo(parent);
         setTitle("Đổi mật khẩu");
     }
-    
+
     public boolean isPasswordChanged() {
         return passwordChanged;
     }
-    
+
     private boolean validateFields() {
         String newPassword = txtNewPassword.getText();
         String confirmPassword = txtConfirmPassword.getText();
-        
+
         if (newPassword.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập mật khẩu mới!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        
+
         if (confirmPassword.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng xác nhận mật khẩu mới!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        
+
         if (!newPassword.equals(confirmPassword)) {
             JOptionPane.showMessageDialog(this, "Mật khẩu xác nhận không khớp!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        
+
         return true;
     }
 
@@ -189,20 +190,32 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
         if (validateFields()) {
             try {
                 String newPassword = txtNewPassword.getText();
-                
-                User user = new User();
-                user.setUser_id(userId);
-                user.setPassword(newPassword);
-                
-                UserDAO.update(user);
-                
-                JOptionPane.showMessageDialog(this, 
-                        "Đã đổi mật khẩu cho tài khoản '" + username + "'!", 
-                        "Thông báo", 
-                        JOptionPane.INFORMATION_MESSAGE);
-                
-                passwordChanged = true;
-                dispose();
+
+                // Create a simple SQL query to update only the password field
+                String query = "UPDATE USER SET password = '" + newPassword + "' WHERE user_id = " + userId;
+                boolean success = false;
+
+                try {
+                    DAO.DbOperations.setDataOrDelete(query, "Đổi mật khẩu thành công!");
+                    success = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (success) {
+                    JOptionPane.showMessageDialog(this,
+                            "Đã đổi mật khẩu cho tài khoản '" + username + "'!",
+                            "Thông báo",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    passwordChanged = true;
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Không thể đổi mật khẩu. Vui lòng thử lại sau!",
+                            "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
             }
@@ -220,7 +233,7 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

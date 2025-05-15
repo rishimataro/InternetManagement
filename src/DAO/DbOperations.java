@@ -7,6 +7,7 @@ import java.sql.Statement;
 import javax.swing.JOptionPane;
 
 public class DbOperations {
+
     public static void setDataOrDelete(String query, String msg) {
         Connection conn = null;
         Statement st = null;
@@ -16,10 +17,10 @@ public class DbOperations {
             st.executeUpdate(query);
 
             if(!msg.equals("")) {
-                JOptionPane.showMessageDialog(null, msg, "Message", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, msg, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, ex, "Message", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, ex, "Lỗi", JOptionPane.ERROR_MESSAGE);
         } finally {
             try {
                 if (st != null) st.close();
@@ -29,22 +30,22 @@ public class DbOperations {
             }
         }
     }
-    
+
     public static ResultSet getData(String query){
         Connection conn = null;
         Statement st = null;
         ResultSet rs = null;
-        
+
         try{
             conn = ConnectionProvider.getConn();
             st = conn.createStatement();
             rs = st.executeQuery(query);
-            
+
             return rs;
         } catch (Exception ex){
             JOptionPane.showMessageDialog(null, ex, "Message", JOptionPane.ERROR_MESSAGE);
             return null;
-        } 
+        }
     }
 
     public static int getNextId(String tableName, String idColumnName) {
