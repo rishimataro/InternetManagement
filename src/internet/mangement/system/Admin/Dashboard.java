@@ -8,6 +8,7 @@ import Model.User;
 import internet.mangement.system.LookAndFeelSetup;
 import internet.mangement.system.Session.UserSession;
 import java.time.LocalTime;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -25,6 +26,7 @@ public class Dashboard extends javax.swing.JFrame {
         initComponents();
         
         setTitle("Dashboard Quản trị viên");
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setupHello();
         setupUsername();
     }
@@ -217,6 +219,8 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void btnUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUserActionPerformed
         // TODO add your handling code here:
+        setVisible(false);
+        new UserManagement().setVisible(true);
     }//GEN-LAST:event_btnUserActionPerformed
 
     private void btnCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomerActionPerformed
@@ -237,6 +241,8 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void btnStatisticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStatisticActionPerformed
         // TODO add your handling code here:
+        setVisible(false);
+        new Statistical().setVisible(true);
     }//GEN-LAST:event_btnStatisticActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
