@@ -3,7 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/internet/mangement/system/CustomerDialog.java</file>
             <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/internet/mangement/system/CustomerManagementForm.java</file>
+            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/internet/mangement/system/BillingHistoryForm.java</file>
+            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/internet/mangement/system/CustomerFormController.java</file>
+            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/DAO/CustomerDAO.java</file>
+            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/internet/mangement/system/README_CustomerManagement.md</file>
+            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/DAO/BillingDAO.java</file>
+            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/Model/Billing.java</file>
+            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/Model/BillHistory.java</file>
         </group>
     </open-files>
 </project-private>

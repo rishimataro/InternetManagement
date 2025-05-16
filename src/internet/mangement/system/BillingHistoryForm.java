@@ -7,10 +7,15 @@ package internet.mangement.system;
 import DAO.BillingDAO;
 import Model.Billing;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.formdev.flatlaf.FlatDarculaLaf;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -28,12 +33,26 @@ public class BillingHistoryForm extends javax.swing.JFrame {
     private List<Billing> billingList;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-    private final String[] statuses = {"paid", "unpaid"};
+    private final DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MM/yyyy");
+    private final NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale.Builder().setLanguage("vi").setRegion("VN").build());
+    private final String[] statuses = {"paid", "unpaid", "late"};
+    private final String[] months = {"Tất cả", "01/2023", "02/2023", "03/2023", "04/2023", "05/2023", "06/2023",
+                                    "07/2023", "08/2023", "09/2023", "10/2023", "11/2023", "12/2023",
+                                    "01/2024", "02/2024", "03/2024", "04/2024", "05/2024", "06/2024"};
+
+    // FlatLaf themes
+    private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenu themeMenu;
+    private javax.swing.JMenuItem lightThemeItem;
+    private javax.swing.JMenuItem darkThemeItem;
+    private javax.swing.JMenuItem intellijThemeItem;
+    private javax.swing.JMenuItem darculaThemeItem;
 
     /**
      * Creates new form BillingHistoryForm
      */
     public BillingHistoryForm() {
+        // Set up FlatLaf Look and Feel
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception ex) {
@@ -43,12 +62,77 @@ public class BillingHistoryForm extends javax.swing.JFrame {
         initComponents();
         setTitle("Quản lý lịch sử gói cước");
         setupComponents();
+        setupThemeMenu();
         loadBillingData();
 
         // Add row selection listener to populate detail fields
         jTable2.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && jTable2.getSelectedRow() != -1) {
                 displaySelectedBilling();
+            }
+        });
+    }
+
+    /**
+     * Set up the theme menu
+     */
+    private void setupThemeMenu() {
+        // Create menu bar if it doesn't exist
+        if (menuBar == null) {
+            menuBar = new javax.swing.JMenuBar();
+            setJMenuBar(menuBar);
+        }
+
+        // Create theme menu
+        themeMenu = new javax.swing.JMenu("Giao diện");
+        menuBar.add(themeMenu);
+
+        // Create theme menu items
+        lightThemeItem = new javax.swing.JMenuItem("Light");
+        darkThemeItem = new javax.swing.JMenuItem("Dark");
+        intellijThemeItem = new javax.swing.JMenuItem("IntelliJ");
+        darculaThemeItem = new javax.swing.JMenuItem("Darcula");
+
+        // Add theme menu items to theme menu
+        themeMenu.add(lightThemeItem);
+        themeMenu.add(darkThemeItem);
+        themeMenu.add(intellijThemeItem);
+        themeMenu.add(darculaThemeItem);
+
+        // Add action listeners to theme menu items
+        lightThemeItem.addActionListener(e -> {
+            try {
+                UIManager.setLookAndFeel(new FlatLightLaf());
+                javax.swing.SwingUtilities.updateComponentTreeUI(this);
+            } catch (Exception ex) {
+                System.err.println("Failed to initialize FlatLightLaf");
+            }
+        });
+
+        darkThemeItem.addActionListener(e -> {
+            try {
+                UIManager.setLookAndFeel(new FlatDarkLaf());
+                javax.swing.SwingUtilities.updateComponentTreeUI(this);
+            } catch (Exception ex) {
+                System.err.println("Failed to initialize FlatDarkLaf");
+            }
+        });
+
+        intellijThemeItem.addActionListener(e -> {
+            try {
+                UIManager.setLookAndFeel(new FlatIntelliJLaf());
+                javax.swing.SwingUtilities.updateComponentTreeUI(this);
+            } catch (Exception ex) {
+                System.err.println("Failed to initialize FlatIntelliJLaf");
+            }
+        });
+
+        darculaThemeItem.addActionListener(e -> {
+            try {
+                UIManager.setLookAndFeel(new FlatDarculaLaf());
+                javax.swing.SwingUtilities.updateComponentTreeUI(this);
+            } catch (Exception ex) {
+                System.err.println("Failed to initialize FlatDarculaLaf");
             }
         });
     }
@@ -390,6 +474,7 @@ public class BillingHistoryForm extends javax.swing.JFrame {
      */
     private void setupComponents() {
         // Set up the combo boxes
+        jComboBox1.setModel(new DefaultComboBoxModel<>(months));
         jComboBox2.setModel(new DefaultComboBoxModel<>(statuses));
         jComboBox3.setModel(new DefaultComboBoxModel<>(statuses));
 
@@ -413,11 +498,19 @@ public class BillingHistoryForm extends javax.swing.JFrame {
         // Set column names and properties
         DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
         model.setColumnIdentifiers(new String[] {
-            "Mã hóa đơn", "Mã hợp đồng", "Kỳ thanh toán", "Số tiền", "Trạng thái", "Ngày thanh toán"
+            "Mã hóa đơn", "Mã hợp đồng", "Kỳ thanh toán", "Số tiền (VND)", "Trạng thái", "Ngày thanh toán"
         });
 
         // Make table cells non-editable
         jTable2.setDefaultEditor(Object.class, null);
+
+        // Set column widths
+        jTable2.getColumnModel().getColumn(0).setPreferredWidth(80);  // ID
+        jTable2.getColumnModel().getColumn(1).setPreferredWidth(80);  // Contract ID
+        jTable2.getColumnModel().getColumn(2).setPreferredWidth(100); // Billing Period
+        jTable2.getColumnModel().getColumn(3).setPreferredWidth(150); // Amount
+        jTable2.getColumnModel().getColumn(4).setPreferredWidth(100); // Status
+        jTable2.getColumnModel().getColumn(5).setPreferredWidth(150); // Payment Date
     }
 
     /**
@@ -447,7 +540,7 @@ public class BillingHistoryForm extends javax.swing.JFrame {
                 row.add("");
             }
 
-            row.add(billing.getAmount());
+            row.add(currencyFormatter.format(billing.getAmount()));
             row.add(billing.getStatus());
 
             if (billing.getPaymentDate() != null) {
@@ -481,7 +574,7 @@ public class BillingHistoryForm extends javax.swing.JFrame {
                     jTextField4.setText("");
                 }
 
-                jTextField5.setText(String.valueOf(billing.getAmount()));
+                jTextField5.setText(currencyFormatter.format(billing.getAmount()));
 
                 // Set status in combo box
                 for (int i = 0; i < statuses.length; i++) {
@@ -506,6 +599,7 @@ public class BillingHistoryForm extends javax.swing.JFrame {
      */
     private void searchBillings() {
         String contractIdStr = jTextField1.getText().trim();
+        String selectedMonth = (String) jComboBox1.getSelectedItem();
         String status = (String) jComboBox2.getSelectedItem();
 
         List<Billing> searchResults;
@@ -518,12 +612,19 @@ public class BillingHistoryForm extends javax.swing.JFrame {
                 return;
             }
         } else {
-            // Search by status
+            // Search by month and status
             searchResults = new ArrayList<>();
             for (Billing billing : billingList) {
                 boolean matchStatus = billing.getStatus().equals(status);
+                boolean matchMonth = true; // Default to true for "Tất cả"
 
-                if (matchStatus) {
+                // If a specific month is selected, check if the billing period matches
+                if (!selectedMonth.equals("Tất cả") && billing.getBillingPeriod() != null) {
+                    String billingMonth = billing.getBillingPeriod().format(monthFormatter);
+                    matchMonth = billingMonth.equals(selectedMonth);
+                }
+
+                if (matchStatus && matchMonth) {
                     searchResults.add(billing);
                 }
             }
@@ -537,7 +638,8 @@ public class BillingHistoryForm extends javax.swing.JFrame {
      */
     private void clearSearch() {
         jTextField1.setText("");
-        jComboBox2.setSelectedIndex(0);
+        jComboBox1.setSelectedIndex(0); // Reset month filter to "Tất cả"
+        jComboBox2.setSelectedIndex(0); // Reset status filter to first option
         loadBillingData();
     }
 
@@ -560,7 +662,10 @@ public class BillingHistoryForm extends javax.swing.JFrame {
 
         try {
             int contractId = Integer.parseInt(contractIdStr);
-            double amount = Double.parseDouble(amountStr);
+
+            // Parse amount from currency format
+            String cleanedAmount = amountStr.replaceAll("[^\\d]", "");
+            double amount = Double.parseDouble(cleanedAmount);
 
             // Create new billing
             Billing newBilling = new Billing();
@@ -632,7 +737,10 @@ public class BillingHistoryForm extends javax.swing.JFrame {
         try {
             int billingId = Integer.parseInt(billingIdStr);
             int contractId = Integer.parseInt(contractIdStr);
-            double amount = Double.parseDouble(amountStr);
+
+            // Parse amount from currency format
+            String cleanedAmount = amountStr.replaceAll("[^\\d]", "");
+            double amount = Double.parseDouble(cleanedAmount);
 
             // Get the existing billing
             Billing billing = BillingDAO.getBillingById(billingId);
