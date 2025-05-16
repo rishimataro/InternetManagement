@@ -4,6 +4,7 @@
  */
 package internet.mangement.system.Session;
 
+import Model.Subscriber;
 import Model.User;
 
 /**
@@ -12,6 +13,7 @@ import Model.User;
  */
 public class UserSession {
     public static User currentUser;
+    public static Subscriber currentSub;
 
     public UserSession() {
     }
@@ -22,6 +24,14 @@ public class UserSession {
 
     public static void setCurrentUser(User currentUser) {
         UserSession.currentUser = currentUser;
+    }
+
+    public static Subscriber getCurrentSub() {
+        return currentSub;
+    }
+
+    public static void setCurrentSub(Subscriber currentSub) {
+        UserSession.currentSub = currentSub;
     }
     
     

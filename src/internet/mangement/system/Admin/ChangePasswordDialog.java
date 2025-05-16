@@ -7,6 +7,7 @@ package internet.mangement.system.Admin;
 import DAO.DbOperations;
 import DAO.UserDAO;
 import Model.User;
+import internet.mangement.system.LookAndFeelSetup;
 import javax.swing.JOptionPane;
 
 /**
@@ -252,6 +253,7 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
             java.util.logging.Logger.getLogger(ChangePasswordDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        LookAndFeelSetup.applySystemLookAndFeel();
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {

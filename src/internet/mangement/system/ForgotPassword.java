@@ -267,8 +267,6 @@ public class ForgotPassword extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_btnChangeActionPerformed
 
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChange;
     private javax.swing.JButton btnCheck;
