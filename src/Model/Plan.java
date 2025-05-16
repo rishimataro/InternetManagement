@@ -85,6 +85,11 @@ public class Plan {
     public void setMin_speed_international(double min_speed_international) {
         this.min_speed_international = min_speed_international;
     }
+    @Override
+    public String toString() {
+        return name;
+    }
+    
    
    
 }

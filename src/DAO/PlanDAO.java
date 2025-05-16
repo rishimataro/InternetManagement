@@ -153,26 +153,7 @@ public class PlanDAO {
 
 
     public static List<Plan> getAll() throws SQLException {
-//     String query = "SELECT * FROM PLAN";
-//     ResultSet rs = DbOperations.getData(query);
-//     List<Plan> plans = new ArrayList<>();
-//     try{
-//         while(rs.next()){
-//             Plan plan = new Plan();
-//             plan.setPlan_id(rs.getInt("plan_id"));
-//             plan.setName(rs.getString("name"));
-//             plan.setPrice(rs.getLong("price"));
-//             plan.setMax_speed_domestic(rs.getDouble("max_speed_domestic"));
-//             plan.setMin_speed_domestic(rs.getDouble("min_speed_domestic"));
-//             plan.setMax_speed_international(rs.getDouble("max_speed_international"));
-//             plan.setMin_speed_international(rs.getDouble("min_speed_international"));
-//         }
-//
-//     }catch (Exception e){
-//             JOptionPane.showMessageDialog(null, e, "Message", JOptionPane.ERROR_MESSAGE);
-//         }
-//     return plans;
-        
+
         List<Plan> list = new ArrayList<>();
         Connection conn = ConnectionProvider.getConn(); // đảm bảo hàm này đúng
         String sql = "SELECT * FROM PLAN";
