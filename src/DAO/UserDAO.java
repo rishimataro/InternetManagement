@@ -82,6 +82,25 @@ public class UserDAO{
         return user;
     }
 
+    /**
+     * Get subscriber information for the current user session
+     * @param userId The user ID to get subscriber information for
+     * @return The subscriber information, or null if not found
+     */
+    public static void getSubscriberForSession(int userId) {
+        try {
+            // Get subscriber information for the user
+            Model.Subscriber subscriber = SubscriberDAO.getByUserId(userId);
+
+            // Set the subscriber in the session
+            if (subscriber != null) {
+                internet.mangement.system.Session.UserSession.setCurrentSub(subscriber);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public static boolean update(User obj) {
         try {
             StringBuilder query = new StringBuilder("UPDATE USER SET ");

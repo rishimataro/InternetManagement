@@ -62,8 +62,38 @@ public class SubscriberDAO{
         DbOperations.executeTransaction(operations, "Đăng ký thành công!");
     }
 
-    public static void update(Subscriber obj) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public static void update(final Subscriber obj) {
+        SqlOperation[] operations = new SqlOperation[] {
+            new SqlOperation() {
+                @Override
+                public String getSql() {
+                    return "UPDATE USER SET username = ? WHERE user_id = ?";
+                }
+
+                @Override
+                public void setParameters(PreparedStatement ps) throws Exception {
+                    ps.setString(1, obj.getUsername());
+                    ps.setInt(2, obj.getUser_id());
+                }
+            },
+
+            new SqlOperation() {
+                @Override
+                public String getSql() {
+                    return "UPDATE SUBSCRIBER SET name = ?, address = ?, phone = ? WHERE subscriber_id = ?";
+                }
+
+                @Override
+                public void setParameters(PreparedStatement ps) throws Exception {
+                    ps.setString(1, obj.getFullName());
+                    ps.setString(2, obj.getAddress());
+                    ps.setString(3, obj.getPhone());
+                    ps.setInt(4, obj.getSubscriber_id());
+                }
+            }
+        };
+
+        DbOperations.executeTransaction(operations, "Cập nhật thông tin thành công!");
     }
 
     public static void delete(int id) {
@@ -76,6 +106,30 @@ public class SubscriberDAO{
 
     public static List<Subscriber> getAll() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public static Subscriber getByUserId(int userId) {
+        Subscriber subscriber = null;
+        try {
+            ResultSet rs = DbOperations.getData("SELECT s.*, u.* FROM SUBSCRIBER s JOIN USER u ON s.user_id = u.user_id WHERE s.user_id = " + userId);
+            if (rs.next()) {
+                subscriber = new Subscriber();
+                subscriber.setSubscriber_id(rs.getInt("subscriber_id"));
+                subscriber.setFullName(rs.getString("name"));
+                subscriber.setAddress(rs.getString("address"));
+                subscriber.setPhone(rs.getString("phone"));
+                subscriber.setUser_id(rs.getInt("user_id"));
+                subscriber.setUsername(rs.getString("username"));
+                subscriber.setPassword(rs.getString("password"));
+                subscriber.setRole(rs.getString("role"));
+                subscriber.setCreate_at(rs.getTimestamp("created_at").toLocalDateTime());
+                subscriber.setIsActive(rs.getBoolean("isActive"));
+            }
+            rs.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return subscriber;
     }
 
     public static Subscriber getByPhone(String phone) {

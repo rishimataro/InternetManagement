@@ -6,7 +6,6 @@ package internet.mangement.system;
 
 import DAO.UserDAO;
 import Model.User;
-import internet.mangement.system.Admin.Dashboard;
 import internet.mangement.system.Session.UserSession;
 import javax.swing.JOptionPane;
 
@@ -208,12 +207,16 @@ public class Login extends javax.swing.JFrame {
                 if(user != null) {
                     UserSession.setCurrentUser(user);
 
+                    if(!"admin".equalsIgnoreCase(user.getRole())) {
+                        UserDAO.getSubscriberForSession(user.getUser_id());
+                    }
+
                     JOptionPane.showMessageDialog(this, "Đăng nhập thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 
                     if("admin".equalsIgnoreCase(user.getRole())) {
-                        new Dashboard().setVisible(true);
+                        new internet.mangement.system.Admin.Dashboard().setVisible(true);
                     } else {
-
+                        new internet.mangement.system.User.Dashboard().setVisible(true);
                     }
 
                     this.dispose();
@@ -273,6 +276,7 @@ public class Login extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        LookAndFeelSetup.applySystemLookAndFeel();
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
