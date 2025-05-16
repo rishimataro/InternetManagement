@@ -36,6 +36,7 @@ public class BillingHistoryForm extends javax.swing.JFrame {
     private final DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MM/yyyy");
     private final NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale.Builder().setLanguage("vi").setRegion("VN").build());
     private final String[] statuses = {"paid", "unpaid", "late"};
+    private final String[] statusesWithAll = {"Tất cả", "paid", "unpaid", "late"};
     private final String[] months = {"Tất cả", "01/2023", "02/2023", "03/2023", "04/2023", "05/2023", "06/2023",
                                     "07/2023", "08/2023", "09/2023", "10/2023", "11/2023", "12/2023",
                                     "01/2024", "02/2024", "03/2024", "04/2024", "05/2024", "06/2024"};
@@ -381,8 +382,6 @@ public class BillingHistoryForm extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jButton4)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton5)
-                        .addGap(18, 18, 18)
                         .addComponent(jButton6)))
                 .addGap(41, 41, 41))
         );
@@ -417,7 +416,6 @@ public class BillingHistoryForm extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
@@ -475,7 +473,7 @@ public class BillingHistoryForm extends javax.swing.JFrame {
     private void setupComponents() {
         // Set up the combo boxes
         jComboBox1.setModel(new DefaultComboBoxModel<>(months));
-        jComboBox2.setModel(new DefaultComboBoxModel<>(statuses));
+        jComboBox2.setModel(new DefaultComboBoxModel<>(statusesWithAll));
         jComboBox3.setModel(new DefaultComboBoxModel<>(statuses));
 
         // Set up the table
@@ -485,9 +483,24 @@ public class BillingHistoryForm extends javax.swing.JFrame {
         jButton1.addActionListener(e -> clearSearch());
         jButton2.addActionListener(e -> searchBillings());
         jButton3.addActionListener(e -> updateBillingStatus());
-        jButton4.addActionListener(e -> addBilling());
-        jButton5.addActionListener(e -> editBilling());
+
+        // Create a new "Làm mới" button to replace the Add, Edit, Delete buttons
+        jButton4.setText("Làm mới");
+        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/undo.png")));
+        jButton4.addActionListener(e -> {
+            // Refresh data
+            loadBillingData();
+            // Clear detail fields
+            clearDetailFields();
+        });
+
+        // Hide the Edit button but keep Delete button
+        jButton5.setVisible(false);
+
+        // Configure Delete button
+        jButton6.setVisible(true);
         jButton6.addActionListener(e -> deleteBilling());
+
         jButton7.addActionListener(e -> this.dispose());
     }
 
@@ -565,7 +578,10 @@ public class BillingHistoryForm extends javax.swing.JFrame {
             if (billing != null) {
                 // Update the detail fields with billing information
                 jTextField2.setText(String.valueOf(billing.getBillingId()));
+                jTextField2.setEditable(false);
+
                 jTextField3.setText(String.valueOf(billing.getContractId()));
+                jTextField3.setEditable(false);
 
                 // Display billing period
                 if (billing.getBillingPeriod() != null) {
@@ -573,8 +589,10 @@ public class BillingHistoryForm extends javax.swing.JFrame {
                 } else {
                     jTextField4.setText("");
                 }
+                jTextField4.setEditable(false);
 
                 jTextField5.setText(currencyFormatter.format(billing.getAmount()));
+                jTextField5.setEditable(false);
 
                 // Set status in combo box
                 for (int i = 0; i < statuses.length; i++) {
@@ -590,6 +608,7 @@ public class BillingHistoryForm extends javax.swing.JFrame {
                 } else {
                     jTextField6.setText("");
                 }
+                jTextField6.setEditable(false);
             }
         }
     }
@@ -615,7 +634,7 @@ public class BillingHistoryForm extends javax.swing.JFrame {
             // Search by month and status
             searchResults = new ArrayList<>();
             for (Billing billing : billingList) {
-                boolean matchStatus = billing.getStatus().equals(status);
+                boolean matchStatus = status.equals("Tất cả") || billing.getStatus().equals(status);
                 boolean matchMonth = true; // Default to true for "Tất cả"
 
                 // If a specific month is selected, check if the billing period matches
@@ -860,7 +879,8 @@ public class BillingHistoryForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        addBilling();
+        loadBillingData();
+        clearDetailFields();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
