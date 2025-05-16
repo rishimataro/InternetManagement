@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package internet.mangement.system;
+package internet.mangement.system.Admin;
 
 import DAO.BillingDAO;
 import Model.Billing;
