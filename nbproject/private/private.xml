@@ -3,13 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/DAO/CustomerDAO.java</file>
-            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/internet/mangement/system/README_CustomerManagement.md</file>
-            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/DAO/BillingDAO.java</file>
-            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/Model/Billing.java</file>
             <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/internet/mangement/system/Login.java</file>
-            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/internet/mangement/system/Admin/CustomerManagementForm.java</file>
+            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/DAO/BillingDAO.java</file>
             <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/internet/mangement/system/Admin/BillingHistoryForm.java</file>
+            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/internet/mangement/system/Admin/CustomerManagementForm.java</file>
+            <file>file:/F:/DAIHOC/Nam2-ky2/InternetManagement/src/internet/mangement/system/Admin/BillingHistoryForm1.java</file>
         </group>
     </open-files>
 </project-private>
