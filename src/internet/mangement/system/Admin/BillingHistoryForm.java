@@ -517,6 +517,25 @@ public class BillingHistoryForm extends javax.swing.JFrame {
 
         // Hide the Edit button
         jButton5.setVisible(false);
+
+        // Set hand cursor for all buttons
+        setHandCursorForButtons();
+    }
+
+    /**
+     * Set hand cursor for all buttons
+     */
+    private void setHandCursorForButtons() {
+        java.awt.Cursor handCursor = new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR);
+
+        // Set hand cursor for all buttons
+        jButton1.setCursor(handCursor);
+        jButton2.setCursor(handCursor);
+        jButton3.setCursor(handCursor);
+        jButton4.setCursor(handCursor);
+        jButton5.setCursor(handCursor);
+        jButton6.setCursor(handCursor);
+        jButton7.setCursor(handCursor);
     }
 
     /**
@@ -767,6 +786,24 @@ public class BillingHistoryForm extends javax.swing.JFrame {
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         this.dispose();
+        try {
+            // Open the Dashboard form
+            java.awt.EventQueue.invokeLater(() -> {
+                try {
+                    // Try to find the Dashboard class using reflection
+                    Class<?> dashboardClass = Class.forName("internet.mangement.system.Admin.Dashboard");
+                    Object dashboardInstance = dashboardClass.getDeclaredConstructor().newInstance();
+                    java.lang.reflect.Method setVisibleMethod = dashboardClass.getMethod("setVisible", boolean.class);
+                    setVisibleMethod.invoke(dashboardInstance, true);
+                } catch (Exception ex) {
+                    javax.swing.JOptionPane.showMessageDialog(null,
+                        "Không thể mở Dashboard. Lỗi: " + ex.getMessage(),
+                        "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
+                }
+            });
+        } catch (Exception ex) {
+            System.err.println("Error opening Dashboard: " + ex.getMessage());
+        }
     }//GEN-LAST:event_jButton7ActionPerformed
 
     /**

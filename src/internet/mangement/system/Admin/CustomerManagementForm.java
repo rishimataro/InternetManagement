@@ -29,13 +29,48 @@ public class CustomerManagementForm extends javax.swing.JFrame {
         setTitle("Quản lý khách hàng");
         setupTable();
         loadCustomerData();
+        setHandCursorForButtons();
+        setFieldsEditable(false); // Make fields non-editable by default
 
         // Add row selection listener to populate detail fields
         jTable1.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && jTable1.getSelectedRow() != -1) {
                 displaySelectedCustomer();
+                setFieldsEditable(false); // Ensure fields are non-editable when a new customer is selected
             }
         });
+    }
+
+    /**
+     * Set hand cursor for all buttons
+     */
+    private void setHandCursorForButtons() {
+        java.awt.Cursor handCursor = new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR);
+
+        // Set hand cursor for all buttons
+        jButton1.setCursor(handCursor);
+        btnSearch.setCursor(handCursor);
+        jButton3.setCursor(handCursor);
+        jButton4.setCursor(handCursor);
+        jButton5.setCursor(handCursor);
+        jButton6.setCursor(handCursor);
+        jButton7.setCursor(handCursor);
+        jButton8.setCursor(handCursor);
+    }
+
+    /**
+     * Set the editable state of the detail fields
+     * @param editable true to make fields editable, false to make them non-editable
+     */
+    private void setFieldsEditable(boolean editable) {
+        // "Mã khách hàng" and "ID người dùng" are always non-editable
+        jTextField3.setEditable(false);
+        jTextField7.setEditable(false);
+
+        // Other fields can be made editable or non-editable
+        jTextField4.setEditable(editable); // Tên khách hàng
+        jTextField5.setEditable(editable); // Địa chỉ
+        jTextField6.setEditable(editable); // Số điện thoại
     }
 
     /**
@@ -230,6 +265,39 @@ public class CustomerManagementForm extends javax.swing.JFrame {
             }
         });
 
+        jButton7 = new javax.swing.JButton();
+        jButton7.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
+        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/undo.png"))); // NOI18N
+        jButton7.setText("Làm mới");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+
+        jButton8 = new javax.swing.JButton();
+        jButton8.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
+
+        // Try to load the save icon, but don't crash if it's not found
+        try {
+            java.net.URL iconURL = getClass().getResource("/Images/save.png");
+            if (iconURL != null) {
+                jButton8.setIcon(new javax.swing.ImageIcon(iconURL));
+            } else {
+                // If the icon is not found, just use text
+                System.err.println("Warning: Could not find save.png icon");
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading save icon: " + e.getMessage());
+        }
+
+        jButton8.setText("Lưu");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -252,10 +320,14 @@ public class CustomerManagementForm extends javax.swing.JFrame {
                             .addComponent(jTextField6)
                             .addComponent(jTextField7, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(185, 185, 185)
+                        .addGap(60, 60, 60)
+                        .addComponent(jButton7)
+                        .addGap(18, 18, 18)
                         .addComponent(jButton3)
                         .addGap(18, 18, 18)
                         .addComponent(jButton4)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton8)
                         .addGap(18, 18, 18)
                         .addComponent(jButton5)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -287,7 +359,9 @@ public class CustomerManagementForm extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(49, 49, 49))
         );
 
@@ -442,103 +516,7 @@ public class CustomerManagementForm extends javax.swing.JFrame {
         loadCustomerData();
     }
 
-    /**
-     * Add a new customer
-     */
-    private void addCustomer() {
-        // Get values from form fields
-        String fullName = jTextField4.getText().trim();
-        String address = jTextField5.getText().trim();
-        String phone = jTextField6.getText().trim();
-        String userIdText = jTextField7.getText().trim();
 
-        // Validate input
-        if (fullName.isEmpty() || address.isEmpty() || phone.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin khách hàng", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Create new customer
-        Customer newCustomer = new Customer();
-        newCustomer.setFullName(fullName);
-        newCustomer.setAddress(address);
-        newCustomer.setPhone(phone);
-
-        // Set user ID if provided
-        if (!userIdText.isEmpty()) {
-            try {
-                int userId = Integer.parseInt(userIdText);
-                newCustomer.setUser_id(userId);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "ID người dùng phải là số", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-
-        // Set default values
-        newCustomer.setUsername(phone); // Use phone as default username
-        newCustomer.setPassword("password123"); // Default password
-        newCustomer.setRole("user");
-        newCustomer.setCreate_at(LocalDateTime.now());
-        newCustomer.setIsActive(true);
-
-        boolean success = CustomerDAO.addCustomer(newCustomer);
-        if (success) {
-            JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            clearDetailFields();
-            loadCustomerData();
-        }
-    }
-
-    /**
-     * Edit the selected customer
-     */
-    private void editCustomer() {
-        int selectedRow = jTable1.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một khách hàng để sửa", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        int customerId = (int) jTable1.getValueAt(selectedRow, 0);
-        Customer customer = CustomerDAO.getCustomerById(customerId);
-
-        if (customer != null) {
-            // Get values from form fields
-            String fullName = jTextField4.getText().trim();
-            String address = jTextField5.getText().trim();
-            String phone = jTextField6.getText().trim();
-            String userIdText = jTextField7.getText().trim();
-
-            // Validate input
-            if (fullName.isEmpty() || address.isEmpty() || phone.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin khách hàng", "Thông báo", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            // Update customer
-            customer.setFullName(fullName);
-            customer.setAddress(address);
-            customer.setPhone(phone);
-
-            // Set user ID if provided
-            if (!userIdText.isEmpty()) {
-                try {
-                    int userId = Integer.parseInt(userIdText);
-                    customer.setUser_id(userId);
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(this, "ID người dùng phải là số", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-
-            boolean success = CustomerDAO.updateCustomer(customer);
-            if (success) {
-                JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                loadCustomerData();
-            }
-        }
-    }
 
     /**
      * Delete the selected customer
@@ -623,11 +601,26 @@ public class CustomerManagementForm extends javax.swing.JFrame {
     }
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
-        addCustomer();
+        // Clear fields and make them editable
+        clearDetailFields();
+        setFieldsEditable(true);
+
+        // Focus on the name field
+        jTextField4.requestFocus();
     }
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {
-        editCustomer();
+        // If no row is selected, show a message
+        if (jTable1.getSelectedRow() == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một khách hàng để sửa", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Make fields editable
+        setFieldsEditable(true);
+
+        // Focus on the name field
+        jTextField4.requestFocus();
     }
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -636,6 +629,109 @@ public class CustomerManagementForm extends javax.swing.JFrame {
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {
         this.dispose();
+        try {
+            // Open the Dashboard form
+            java.awt.EventQueue.invokeLater(() -> {
+                try {
+                    // Try to find the Dashboard class using reflection
+                    Class<?> dashboardClass = Class.forName("internet.mangement.system.Admin.Dashboard");
+                    Object dashboardInstance = dashboardClass.getDeclaredConstructor().newInstance();
+                    java.lang.reflect.Method setVisibleMethod = dashboardClass.getMethod("setVisible", boolean.class);
+                    setVisibleMethod.invoke(dashboardInstance, true);
+                } catch (Exception ex) {
+                    javax.swing.JOptionPane.showMessageDialog(null,
+                        "Không thể mở Dashboard. Lỗi: " + ex.getMessage(),
+                        "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
+                }
+            });
+        } catch (Exception ex) {
+            System.err.println("Error opening Dashboard: " + ex.getMessage());
+        }
+    }
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {
+        clearDetailFields();
+        setFieldsEditable(false);
+    }
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {
+        // Get the selected row
+        int selectedRow = jTable1.getSelectedRow();
+
+        // Get values from form fields
+        String fullName = jTextField4.getText().trim();
+        String address = jTextField5.getText().trim();
+        String phone = jTextField6.getText().trim();
+        String userIdText = jTextField7.getText().trim();
+
+        // Validate input
+        if (fullName.isEmpty() || address.isEmpty() || phone.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin khách hàng", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // If a row is selected, update the customer
+        if (selectedRow != -1) {
+            int customerId = (int) jTable1.getValueAt(selectedRow, 0);
+            Customer customer = CustomerDAO.getCustomerById(customerId);
+
+            if (customer != null) {
+                // Update customer
+                customer.setFullName(fullName);
+                customer.setAddress(address);
+                customer.setPhone(phone);
+
+                // Set user ID if provided
+                if (!userIdText.isEmpty()) {
+                    try {
+                        int userId = Integer.parseInt(userIdText);
+                        customer.setUser_id(userId);
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(this, "ID người dùng phải là số", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+
+                boolean success = CustomerDAO.updateCustomer(customer);
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    loadCustomerData();
+                    setFieldsEditable(false);
+                }
+            }
+        } else {
+            // Create new customer
+            Customer newCustomer = new Customer();
+            newCustomer.setFullName(fullName);
+            newCustomer.setAddress(address);
+            newCustomer.setPhone(phone);
+
+            // Set user ID if provided
+            if (!userIdText.isEmpty()) {
+                try {
+                    int userId = Integer.parseInt(userIdText);
+                    newCustomer.setUser_id(userId);
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "ID người dùng phải là số", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            // Set default values
+            newCustomer.setUsername(phone); // Use phone as default username
+            newCustomer.setPassword("password123"); // Default password
+            newCustomer.setRole("user");
+            newCustomer.setCreate_at(LocalDateTime.now());
+            newCustomer.setIsActive(true);
+
+            boolean success = CustomerDAO.addCustomer(newCustomer);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                clearDetailFields();
+                loadCustomerData();
+                setFieldsEditable(false);
+            }
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -645,6 +741,8 @@ public class CustomerManagementForm extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
