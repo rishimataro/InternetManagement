@@ -245,7 +245,7 @@ public class Dashboard extends javax.swing.JFrame {
     private void btnHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHistoryActionPerformed
         // TODO add your handling code here:
         setVisible(false);
-        new BillingHistoryManagement().setVisible(true);
+        new BillingHistoryForm().setVisible(true);
     }//GEN-LAST:event_btnHistoryActionPerformed
 
     private void btnStatisticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStatisticActionPerformed
@@ -260,7 +260,7 @@ public class Dashboard extends javax.swing.JFrame {
 
         if (result == JOptionPane.YES_OPTION) {
             setVisible(false);
-            new Login().setVisible(false);
+            new Login().setVisible(true);
         }
     }//GEN-LAST:event_btnExitActionPerformed
 

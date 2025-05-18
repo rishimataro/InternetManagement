@@ -4,7 +4,9 @@
  */
 package internet.mangement.system.User;
 
+import DAO.UserDAO;
 import Model.User;
+import internet.mangement.system.Login;
 import internet.mangement.system.LookAndFeelSetup;
 import internet.mangement.system.Session.UserSession;
 import java.time.LocalTime;
@@ -23,17 +25,17 @@ public class Dashboard extends javax.swing.JFrame {
      */
     public Dashboard() {
         initComponents();
-        
+
         setTitle("Dashboard Người dùng");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setupHello();
         setupUsername();
     }
-    
+
     private void setupHello() {
         LocalTime now = LocalTime.now();
         int hour = now.getHour();
-        
+
         String greeting;
 
         if (hour >= 5 && hour < 11) {
@@ -45,12 +47,12 @@ public class Dashboard extends javax.swing.JFrame {
         } else {
             greeting = "Chào buổi tối,";
         }
-        
+
         lbHello.setText(greeting);
     }
-    
+
     private void setupUsername() {
-//        lbUserName.setText(user.getUsername());
+        lbUserName.setText(user.getUsername());
     }
 
     /**
@@ -218,7 +220,24 @@ public class Dashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_btnViewContractActionPerformed
 
     private void btnInforUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInforUserActionPerformed
-        // TODO add your handling code here:
+        // Check if subscriber information is available
+        if (UserSession.getCurrentSub() == null) {
+            try {
+                // Fetch subscriber information if not available
+                boolean success = UserDAO.getSubscriberForSession(user.getUser_id());
+
+                // Check if subscriber information was successfully loaded
+                if (!success || UserSession.getCurrentSub() == null) {
+                    JOptionPane.showMessageDialog(this, "Không thể tải thông tin người dùng. Vui lòng thử lại sau.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        // Now we can safely open the InforUser form
         setVisible(false);
         new InforUser().setVisible(true);
     }//GEN-LAST:event_btnInforUserActionPerformed
@@ -236,7 +255,8 @@ public class Dashboard extends javax.swing.JFrame {
         int result = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn thoát không?", "Thông báo", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
-            System.exit(0);
+            setVisible(false);
+            new Login().setVisible(true);
         }
     }//GEN-LAST:event_btnExitActionPerformed
 
@@ -247,7 +267,7 @@ public class Dashboard extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

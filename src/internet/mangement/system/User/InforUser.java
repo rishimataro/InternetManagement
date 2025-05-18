@@ -5,6 +5,7 @@
 package internet.mangement.system.User;
 
 import DAO.SubscriberDAO;
+import DAO.UserDAO;
 import Model.Subscriber;
 import internet.mangement.system.LookAndFeelSetup;
 import internet.mangement.system.Session.UserSession;
@@ -40,6 +41,34 @@ public class InforUser extends javax.swing.JFrame {
     }
 
     private void setupInfor(){
+        // Check if subscriber information is available
+        if (sub == null) {
+            try {
+                // Try to get the current user ID from the session
+                int userId = UserSession.getCurrentUser().getUser_id();
+
+                // Fetch subscriber information
+                boolean success = UserDAO.getSubscriberForSession(userId);
+
+                // Update the local reference
+                sub = UserSession.getCurrentSub();
+
+                // If still null, show error and return to dashboard
+                if (!success || sub == null) {
+                    JOptionPane.showMessageDialog(this, "Không thể tải thông tin người dùng. Vui lòng thử lại sau.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    setVisible(false);
+                    new Dashboard().setVisible(true);
+                    return;
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
+                setVisible(false);
+                new Dashboard().setVisible(true);
+                return;
+            }
+        }
+
+        // Now we can safely set the user information
         txtUserId.setText(String.valueOf(sub.getUser_id()));
         txtFullName.setText(sub.getFullName());
         txtUserName.setText(sub.getUsername());
@@ -365,12 +394,12 @@ public class InforUser extends javax.swing.JFrame {
         String oldPassword = txtOldPassword.getText().trim();
         String newPassword = txtNewPassword.getText().trim();
         String confirmPassword = txtConfirmPassword.getText().trim();
-        
+
         if(validateFields(oldPassword, newPassword, confirmPassword)) {
             sub.setPassword(newPassword);
             SubscriberDAO.update(sub);
             UserSession.setCurrentSub(sub);
-            
+
             txtOldPassword.setText("");
             txtNewPassword.setText("");
             txtConfirmPassword.setText("");

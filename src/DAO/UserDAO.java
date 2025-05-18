@@ -85,9 +85,9 @@ public class UserDAO{
     /**
      * Get subscriber information for the current user session
      * @param userId The user ID to get subscriber information for
-     * @return The subscriber information, or null if not found
+     * @return true if subscriber information was found and set, false otherwise
      */
-    public static void getSubscriberForSession(int userId) {
+    public static boolean getSubscriberForSession(int userId) {
         try {
             // Get subscriber information for the user
             Model.Subscriber subscriber = SubscriberDAO.getByUserId(userId);
@@ -95,9 +95,15 @@ public class UserDAO{
             // Set the subscriber in the session
             if (subscriber != null) {
                 internet.mangement.system.Session.UserSession.setCurrentSub(subscriber);
+                return true;
+            } else {
+                System.err.println("Warning: No subscriber found for user ID " + userId);
+                return false;
             }
         } catch (Exception ex) {
+            System.err.println("Error getting subscriber information: " + ex.getMessage());
             ex.printStackTrace();
+            return false;
         }
     }
 
