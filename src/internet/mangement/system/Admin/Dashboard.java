@@ -5,6 +5,7 @@
 package internet.mangement.system.Admin;
 
 import Model.User;
+import internet.mangement.system.Login;
 import internet.mangement.system.LookAndFeelSetup;
 import internet.mangement.system.Session.UserSession;
 import java.time.LocalTime;
@@ -51,7 +52,7 @@ public class Dashboard extends javax.swing.JFrame {
     }
     
     private void setupUsername() {
-//        lbUserName.setText(admin.getUsername());
+        lbUserName.setText(admin.getUsername());
     }
 
     /**
@@ -231,10 +232,14 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void btnPlanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlanActionPerformed
         // TODO add your handling code here:
+        setVisible(false);
+        new PlanManagement().setVisible(true);
     }//GEN-LAST:event_btnPlanActionPerformed
 
     private void btnContractActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnContractActionPerformed
         // TODO add your handling code here:
+        setVisible(false);
+        new ContractManagement().setVisible(false);
     }//GEN-LAST:event_btnContractActionPerformed
 
     private void btnHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHistoryActionPerformed
@@ -254,7 +259,8 @@ public class Dashboard extends javax.swing.JFrame {
         int result = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn thoát không?", "Thông báo", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
-            System.exit(0);
+            setVisible(false);
+            new Login().setVisible(false);
         }
     }//GEN-LAST:event_btnExitActionPerformed
 
