@@ -4,11 +4,13 @@
  */
 package DAO;
 
+import Model.Contract;
 import Model.Subscriber;
+
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+
 import DAO.DbOperations.SqlOperation;
 
 /**
@@ -104,8 +106,26 @@ public class SubscriberDAO{
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    public static List<Subscriber> getAll() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public static List<Subscriber> getAll() throws SQLException{
+        List<Subscriber> subscribers = new ArrayList<>();
+        Connection conn = ConnectionProvider.getConn();
+        String sql = "SELECT * FROM SUBSCRIBER";
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
+
+        while (rs.next()) {
+            Subscriber subscriber = new Subscriber();
+            subscriber.setSubscriber_id(rs.getInt( "subscriber_id"));
+            subscriber.setFullName(rs.getString("name"));
+            subscriber.setAddress(rs.getString("address"));
+            subscriber.setPhone(rs.getString("phone"));
+            subscriber.setUser_id(rs.getInt("user_id"));
+            subscribers.add(subscriber);
+        }
+        rs.close();
+        stmt.close();
+        conn.close();
+        return subscribers;
     }
 
     public static Subscriber getByUserId(int userId) {
