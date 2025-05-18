@@ -20,7 +20,7 @@ public class Login extends javax.swing.JFrame {
      */
     public Login() {
         initComponents();
-        setTitle("Đăng ký");
+        setTitle("Đăng nhập");
     }
 
     public void clear(){

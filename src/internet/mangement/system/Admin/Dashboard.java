@@ -225,6 +225,8 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void btnCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomerActionPerformed
         // TODO add your handling code here:
+        setVisible(false);
+        new CustomerManagement().setVisible(true);
     }//GEN-LAST:event_btnCustomerActionPerformed
 
     private void btnPlanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlanActionPerformed
@@ -237,6 +239,8 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void btnHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHistoryActionPerformed
         // TODO add your handling code here:
+        setVisible(false);
+        new BillingHistoryManagement().setVisible(true);
     }//GEN-LAST:event_btnHistoryActionPerformed
 
     private void btnStatisticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStatisticActionPerformed

@@ -28,7 +28,7 @@ import javax.swing.table.DefaultTableModel;
  * Form for managing billing history
  * @author ADMIN
  */
-public class BillingHistoryForm extends javax.swing.JFrame {
+public class BillingHistoryManagement extends javax.swing.JFrame {
 
     private List<Billing> billingList;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -52,7 +52,7 @@ public class BillingHistoryForm extends javax.swing.JFrame {
     /**
      * Creates new form BillingHistoryForm
      */
-    public BillingHistoryForm() {
+    public BillingHistoryManagement() {
         // Set up FlatLaf Look and Feel
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
@@ -501,7 +501,10 @@ public class BillingHistoryForm extends javax.swing.JFrame {
         jButton6.setVisible(true);
         jButton6.addActionListener(e -> deleteBilling());
 
-        jButton7.addActionListener(e -> this.dispose());
+        jButton7.addActionListener(e -> {
+            setVisible(false);
+            new Dashboard().setVisible(true);
+        });
     }
 
     /**
@@ -884,7 +887,7 @@ public class BillingHistoryForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        this.dispose();
+//        this.dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
@@ -908,20 +911,21 @@ public class BillingHistoryForm extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(BillingHistoryForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BillingHistoryManagement.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(BillingHistoryForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BillingHistoryManagement.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(BillingHistoryForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BillingHistoryManagement.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(BillingHistoryForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BillingHistoryManagement.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new BillingHistoryForm().setVisible(true);
+                new BillingHistoryManagement().setVisible(true);
             }
         });
     }
