@@ -28,7 +28,7 @@ import javax.swing.table.DefaultTableModel;
  * Form for managing billing history
  * @author ADMIN
  */
-public class BillingHistoryManagement extends javax.swing.JFrame {
+public class BillingHistoryForm extends javax.swing.JFrame {
 
     private List<Billing> billingList;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -52,7 +52,7 @@ public class BillingHistoryManagement extends javax.swing.JFrame {
     /**
      * Creates new form BillingHistoryForm
      */
-    public BillingHistoryManagement() {
+    public BillingHistoryForm() {
         // Set up FlatLaf Look and Feel
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
@@ -183,7 +183,7 @@ public class BillingHistoryManagement extends javax.swing.JFrame {
         jCheckBoxMenuItem1.setSelected(true);
         jCheckBoxMenuItem1.setText("jCheckBoxMenuItem1");
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Quản lý lịch sử gói cước", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 1, 18))); // NOI18N
 
@@ -244,10 +244,20 @@ public class BillingHistoryManagement extends javax.swing.JFrame {
         jButton1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/undo.png"))); // NOI18N
         jButton1.setText("Làm mới");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/search.png"))); // NOI18N
         jButton2.setText("Tìm kiếm");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -334,6 +344,11 @@ public class BillingHistoryManagement extends javax.swing.JFrame {
         jButton3.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/update.png"))); // NOI18N
         jButton3.setText("Cập nhật trạng thái");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/more.png"))); // NOI18N
@@ -348,10 +363,20 @@ public class BillingHistoryManagement extends javax.swing.JFrame {
         jButton5.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/edit.png"))); // NOI18N
         jButton5.setText("Sửa");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton6.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/delete.png"))); // NOI18N
         jButton6.setText("Xóa");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -479,32 +504,38 @@ public class BillingHistoryManagement extends javax.swing.JFrame {
         // Set up the table
         setupTable();
 
-        // Add action listeners to buttons
-        jButton1.addActionListener(e -> clearSearch());
-        jButton2.addActionListener(e -> searchBillings());
-        jButton3.addActionListener(e -> updateBillingStatus());
+        // Make text fields read-only
+        jTextField2.setEditable(false);
+        jTextField3.setEditable(false);
+        jTextField4.setEditable(false);
+        jTextField5.setEditable(false);
+        jTextField6.setEditable(false);
 
-        // Create a new "Làm mới" button to replace the Add, Edit, Delete buttons
+        // Update button text and icons
         jButton4.setText("Làm mới");
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/undo.png")));
-        jButton4.addActionListener(e -> {
-            // Refresh data
-            loadBillingData();
-            // Clear detail fields
-            clearDetailFields();
-        });
 
-        // Hide the Edit button but keep Delete button
+        // Hide the Edit button
         jButton5.setVisible(false);
 
-        // Configure Delete button
-        jButton6.setVisible(true);
-        jButton6.addActionListener(e -> deleteBilling());
+        // Set hand cursor for all buttons
+        setHandCursorForButtons();
+    }
 
-        jButton7.addActionListener(e -> {
-            setVisible(false);
-            new Dashboard().setVisible(true);
-        });
+    /**
+     * Set hand cursor for all buttons
+     */
+    private void setHandCursorForButtons() {
+        java.awt.Cursor handCursor = new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR);
+
+        // Set hand cursor for all buttons
+        jButton1.setCursor(handCursor);
+        jButton2.setCursor(handCursor);
+        jButton3.setCursor(handCursor);
+        jButton4.setCursor(handCursor);
+        jButton5.setCursor(handCursor);
+        jButton6.setCursor(handCursor);
+        jButton7.setCursor(handCursor);
     }
 
     /**
@@ -581,10 +612,7 @@ public class BillingHistoryManagement extends javax.swing.JFrame {
             if (billing != null) {
                 // Update the detail fields with billing information
                 jTextField2.setText(String.valueOf(billing.getBillingId()));
-                jTextField2.setEditable(false);
-
                 jTextField3.setText(String.valueOf(billing.getContractId()));
-                jTextField3.setEditable(false);
 
                 // Display billing period
                 if (billing.getBillingPeriod() != null) {
@@ -592,10 +620,8 @@ public class BillingHistoryManagement extends javax.swing.JFrame {
                 } else {
                     jTextField4.setText("");
                 }
-                jTextField4.setEditable(false);
 
                 jTextField5.setText(currencyFormatter.format(billing.getAmount()));
-                jTextField5.setEditable(false);
 
                 // Set status in combo box
                 for (int i = 0; i < statuses.length; i++) {
@@ -611,7 +637,6 @@ public class BillingHistoryManagement extends javax.swing.JFrame {
                 } else {
                     jTextField6.setText("");
                 }
-                jTextField6.setEditable(false);
             }
         }
     }
@@ -665,154 +690,7 @@ public class BillingHistoryManagement extends javax.swing.JFrame {
         loadBillingData();
     }
 
-    /**
-     * Add a new billing
-     */
-    private void addBilling() {
-        // Get values from form fields
-        String contractIdStr = jTextField3.getText().trim();
-        String billingPeriodStr = jTextField4.getText().trim();
-        String amountStr = jTextField5.getText().trim();
-        String status = (String) jComboBox3.getSelectedItem();
-        String paymentDateStr = jTextField6.getText().trim();
 
-        // Validate input
-        if (contractIdStr.isEmpty() || billingPeriodStr.isEmpty() || amountStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin hóa đơn", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        try {
-            int contractId = Integer.parseInt(contractIdStr);
-
-            // Parse amount from currency format
-            String cleanedAmount = amountStr.replaceAll("[^\\d]", "");
-            double amount = Double.parseDouble(cleanedAmount);
-
-            // Create new billing
-            Billing newBilling = new Billing();
-            newBilling.setContractId(contractId);
-            newBilling.setAmount(amount);
-            newBilling.setStatus(status);
-
-            // Parse billing period
-            try {
-                LocalDate billingPeriod = LocalDate.parse(billingPeriodStr, dateFormatter);
-                newBilling.setBillingPeriod(billingPeriod);
-            } catch (DateTimeParseException e) {
-                JOptionPane.showMessageDialog(this, "Kỳ thanh toán không hợp lệ. Vui lòng nhập theo định dạng dd/MM/yyyy", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Parse payment date if provided
-            if (!paymentDateStr.isEmpty()) {
-                try {
-                    LocalDateTime paymentDate = LocalDateTime.parse(paymentDateStr, dateTimeFormatter);
-                    newBilling.setPaymentDate(paymentDate);
-                } catch (DateTimeParseException e) {
-                    try {
-                        // Try parsing as date only and add default time
-                        LocalDate paymentDate = LocalDate.parse(paymentDateStr, dateFormatter);
-                        newBilling.setPaymentDate(paymentDate.atTime(0, 0, 0));
-                    } catch (DateTimeParseException ex) {
-                        JOptionPane.showMessageDialog(this, "Ngày thanh toán không hợp lệ. Vui lòng nhập theo định dạng dd/MM/yyyy", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
-            }
-
-            boolean success = BillingDAO.addBilling(newBilling);
-            if (success) {
-                JOptionPane.showMessageDialog(this, "Thêm hóa đơn thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                clearDetailFields();
-                loadBillingData();
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Mã hợp đồng và số tiền phải là số", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    /**
-     * Edit the selected billing
-     */
-    private void editBilling() {
-        int selectedRow = jTable2.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hóa đơn để sửa", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Get values from form fields
-        String billingIdStr = jTextField2.getText().trim();
-        String contractIdStr = jTextField3.getText().trim();
-        String billingPeriodStr = jTextField4.getText().trim();
-        String amountStr = jTextField5.getText().trim();
-        String status = (String) jComboBox3.getSelectedItem();
-        String paymentDateStr = jTextField6.getText().trim();
-
-        // Validate input
-        if (billingIdStr.isEmpty() || contractIdStr.isEmpty() || billingPeriodStr.isEmpty() || amountStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin hóa đơn", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        try {
-            int billingId = Integer.parseInt(billingIdStr);
-            int contractId = Integer.parseInt(contractIdStr);
-
-            // Parse amount from currency format
-            String cleanedAmount = amountStr.replaceAll("[^\\d]", "");
-            double amount = Double.parseDouble(cleanedAmount);
-
-            // Get the existing billing
-            Billing billing = BillingDAO.getBillingById(billingId);
-            if (billing == null) {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Update billing
-            billing.setContractId(contractId);
-            billing.setAmount(amount);
-            billing.setStatus(status);
-
-            // Parse billing period
-            try {
-                LocalDate billingPeriod = LocalDate.parse(billingPeriodStr, dateFormatter);
-                billing.setBillingPeriod(billingPeriod);
-            } catch (DateTimeParseException e) {
-                JOptionPane.showMessageDialog(this, "Kỳ thanh toán không hợp lệ. Vui lòng nhập theo định dạng dd/MM/yyyy", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Parse payment date if provided
-            if (!paymentDateStr.isEmpty()) {
-                try {
-                    LocalDateTime paymentDate = LocalDateTime.parse(paymentDateStr, dateTimeFormatter);
-                    billing.setPaymentDate(paymentDate);
-                } catch (DateTimeParseException e) {
-                    try {
-                        // Try parsing as date only and add default time
-                        LocalDate paymentDate = LocalDate.parse(paymentDateStr, dateFormatter);
-                        billing.setPaymentDate(paymentDate.atTime(0, 0, 0));
-                    } catch (DateTimeParseException ex) {
-                        JOptionPane.showMessageDialog(this, "Ngày thanh toán không hợp lệ. Vui lòng nhập theo định dạng dd/MM/yyyy", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
-            } else {
-                billing.setPaymentDate(null);
-            }
-
-            boolean success = BillingDAO.updateBilling(billing);
-            if (success) {
-                JOptionPane.showMessageDialog(this, "Cập nhật hóa đơn thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                loadBillingData();
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Mã hóa đơn, mã hợp đồng và số tiền phải là số", "Lỗi", JOptionPane.ERROR_MESSAGE);
-        }
-    }
 
     /**
      * Delete the selected billing
@@ -881,13 +759,51 @@ public class BillingHistoryManagement extends javax.swing.JFrame {
         // No action needed
     }//GEN-LAST:event_jTextField2ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        clearSearch();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        searchBillings();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        updateBillingStatus();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         loadBillingData();
         clearDetailFields();
     }//GEN-LAST:event_jButton4ActionPerformed
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // Not used - button is hidden
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        deleteBilling();
+    }//GEN-LAST:event_jButton6ActionPerformed
+
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-//        this.dispose();
+        this.dispose();
+        try {
+            // Open the Dashboard form
+            java.awt.EventQueue.invokeLater(() -> {
+                try {
+                    // Try to find the Dashboard class using reflection
+                    Class<?> dashboardClass = Class.forName("internet.mangement.system.Admin.Dashboard");
+                    Object dashboardInstance = dashboardClass.getDeclaredConstructor().newInstance();
+                    java.lang.reflect.Method setVisibleMethod = dashboardClass.getMethod("setVisible", boolean.class);
+                    setVisibleMethod.invoke(dashboardInstance, true);
+                } catch (Exception ex) {
+                    javax.swing.JOptionPane.showMessageDialog(null,
+                        "Không thể mở Dashboard. Lỗi: " + ex.getMessage(),
+                        "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
+                }
+            });
+        } catch (Exception ex) {
+            System.err.println("Error opening Dashboard: " + ex.getMessage());
+        }
     }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
@@ -911,21 +827,20 @@ public class BillingHistoryManagement extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(BillingHistoryManagement.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BillingHistoryForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(BillingHistoryManagement.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BillingHistoryForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(BillingHistoryManagement.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BillingHistoryForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(BillingHistoryManagement.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BillingHistoryForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new BillingHistoryManagement().setVisible(true);
+                new BillingHistoryForm().setVisible(true);
             }
         });
     }
